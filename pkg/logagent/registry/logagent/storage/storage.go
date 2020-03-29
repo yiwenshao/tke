@@ -168,7 +168,7 @@ type StatusREST struct {
 }
 
 // StatusREST implements Patcher.
-var _ = rest.Patlcher(&StatusREST{})
+var _ = rest.Patcher(&StatusREST{})
 
 // New returns an empty object that can be used with Create and Update after
 // request data has been put into it.
