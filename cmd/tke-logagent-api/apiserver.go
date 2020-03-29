@@ -5,7 +5,9 @@ import (
 	"os"
 	"runtime"
 	"time"
-	"tkestack.io/tke/cmd/tke-monitor-api/app"
+	"tkestack.io/tke/cmd/tke-logagent-api/app"
+
+	"tkestack.io/tke/pkg/util/log"
 )
 
 func main() {
@@ -13,6 +15,6 @@ func main() {
 	if len(os.Getenv("GOMAXPROCS")) == 0 {
 		runtime.GOMAXPROCS(runtime.NumCPU())
 	}
-
+	log.Infof("====================================================================")
 	app.NewApp("tke-logagent-api").Run()
 }

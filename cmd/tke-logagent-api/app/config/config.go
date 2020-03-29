@@ -22,22 +22,22 @@ import (
 	"fmt"
 	genericapiserver "k8s.io/apiserver/pkg/server"
 	serverstorage "k8s.io/apiserver/pkg/server/storage"
+	"k8s.io/client-go/rest"
 	"k8s.io/kube-openapi/pkg/common"
 	"time"
+	versionedclientset "tkestack.io/tke/api/client/clientset/versioned"
 	platformversionedclient "tkestack.io/tke/api/client/clientset/versioned/typed/platform/v1"
 	versionedinformers "tkestack.io/tke/api/client/informers/externalversions"
 	"tkestack.io/tke/api/logagent"
-	"tkestack.io/tke/api/monitor"
+	generatedopenapi "tkestack.io/tke/api/openapi"
 	"tkestack.io/tke/cmd/tke-logagent-api/app/options"
 	"tkestack.io/tke/pkg/apiserver/debug"
 	"tkestack.io/tke/pkg/apiserver/handler"
 	"tkestack.io/tke/pkg/apiserver/openapi"
 	"tkestack.io/tke/pkg/apiserver/storage"
 	controllerconfig "tkestack.io/tke/pkg/controller/config"
-	versionedclientset "tkestack.io/tke/api/client/clientset/versioned"
-	"k8s.io/client-go/rest"
 	"tkestack.io/tke/pkg/logagent/apiserver"
-	generatedopenapi "tkestack.io/tke/api/openapi"
+	"tkestack.io/tke/pkg/util/log"
 )
 
 const (
@@ -59,6 +59,7 @@ type Config struct {
 
 //config relies on options
 func CreateConfigFromOptions(serverName string, opts *options.Options) (*Config, error) {
+	log.Infof("==========================================================================================================")
 
 	genericAPIServerConfig := genericapiserver.NewConfig(logagent.Codecs)
 	genericAPIServerConfig.BuildHandlerChainFunc = handler.BuildHandlerChain(nil)
@@ -78,7 +79,7 @@ func CreateConfigFromOptions(serverName string, opts *options.Options) (*Config,
 		for k, v := range generated {
 			result[k] = v
 		}
-		//customs := monitoropenapi.GetOpenAPIDefinitions(callback)
+		//customs := monitoropenapi.GetOpenAPIDefinitions(callback) //custom routes can use this to add openapi
 		//for k, v := range customs {
 		//	result[k] = v
 		//} //do not use openapi here
@@ -95,7 +96,7 @@ func CreateConfigFromOptions(serverName string, opts *options.Options) (*Config,
 	debug.SetupDebug(genericAPIServerConfig, opts.Debug)
 
 	// storageFactory
-	storageFactoryConfig := storage.NewFactoryConfig(monitor.Codecs, monitor.Scheme)
+	storageFactoryConfig := storage.NewFactoryConfig(logagent.Codecs, logagent.Scheme)
 	storageFactoryConfig.APIResourceConfig = genericAPIServerConfig.MergedResourceConfig
 	completedStorageFactoryConfig, err := storageFactoryConfig.Complete(opts.ETCD)
 	if err != nil {

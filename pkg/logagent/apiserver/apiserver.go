@@ -9,6 +9,7 @@ import (
 	"k8s.io/apiserver/pkg/registry/generic"
 	"tkestack.io/tke/pkg/util/log"
 	logagentv1 "tkestack.io/tke/api/logagent/v1"
+	logagentrest "tkestack.io/tke/pkg/logagent/registry/rest"
 )
 
 
@@ -54,7 +55,6 @@ func (cfg *Config) Complete() CompletedConfig {
 		cfg.GenericConfig.Complete(),
 		&cfg.ExtraConfig,
 	}
-
 	return CompletedConfig{&c}
 }
 
@@ -69,8 +69,13 @@ func (c completedConfig) New(delegationTarget genericapiserver.DelegationTarget)
 	m := &APIServer{
 		GenericAPIServer: s,
 	}
-
-	restStorageProviders := []storage.RESTStorageProvider{}
+	//add provider here
+	restStorageProviders := []storage.RESTStorageProvider{
+		&logagentrest.StorageProvider{
+		LoopbackClientConfig: c.GenericConfig.LoopbackClientConfig,
+		PrivilegedUsername:   c.ExtraConfig.PrivilegedUsername,
+		},
+	}
 	m.InstallAPIs(c.ExtraConfig.APIResourceConfigSource, c.GenericConfig.RESTOptionsGetter, restStorageProviders...)
 	log.Info("All of http handlers registered", log.Strings("paths", m.GenericAPIServer.Handler.ListedPaths()))
 
@@ -111,8 +116,6 @@ func (m *APIServer) InstallAPIs(apiResourceConfigSource serverstorage.APIResourc
 		}
 	}
 }
-
-
 
 // DefaultAPIResourceConfigSource returns which groupVersion enabled and its
 // resources enabled/disabled.

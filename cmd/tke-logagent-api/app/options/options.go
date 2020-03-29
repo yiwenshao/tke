@@ -35,6 +35,7 @@ func NewOptions(serverName string) *Options {
 		Authentication: apiserveroptions.NewAuthenticationWithAPIOptions(),
 		Authorization:  apiserveroptions.NewAuthorizationOptions(),
 		ETCD:           storageoptions.NewETCDStorageOptions("/tke/logagent-api"),
+		PlatformAPIClient: controlleroptions.NewAPIServerClientOptions("platform", true),
 		//Auth:           NewAuthOptions(), //options/logagent.go is not used currently
 	}
 }
@@ -48,8 +49,26 @@ func (o *Options) AddFlags(fs *pflag.FlagSet) {
 	o.Generic.AddFlags(fs)
 	o.Authentication.AddFlags(fs)
 	o.Authorization.AddFlags(fs)
-	o.PlatformAPIClient.AddFlags(fs)
+	o.PlatformAPIClient.AddFlags(fs)//read platform config ang generate platform client
 	//reference monitor to add more flags here
+}
+
+// ApplyFlags parsing parameters from the command line or configuration file
+// to the options instance.
+func (o *Options) ApplyFlags() []error {
+	var errs []error
+
+	errs = append(errs, o.Log.ApplyFlags()...)
+	errs = append(errs, o.SecureServing.ApplyFlags()...)
+	errs = append(errs, o.Debug.ApplyFlags()...)
+	errs = append(errs, o.ETCD.ApplyFlags()...)
+	errs = append(errs, o.Generic.ApplyFlags()...)
+	errs = append(errs, o.Authentication.ApplyFlags()...)
+	errs = append(errs, o.Authorization.ApplyFlags()...)
+	errs = append(errs, o.PlatformAPIClient.ApplyFlags()...)
+	//errs = append(errs, o.Auth.ApplyFlags()...)
+
+	return errs
 }
 
 

@@ -7,7 +7,7 @@ import (
 
 // Run runs the specified TKE console. This should never exit.
 func Run(cfg *config.Config, stopCh <-chan struct{}) error {
-	log.Info("Starting Tencent Kubernetes Engine Auth")
+	log.Info("Starting Tencent Kubernetes Engine Logagent")
 
 	server, err := CreateServerChain(cfg)
 	if err != nil {
