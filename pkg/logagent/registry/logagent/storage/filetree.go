@@ -57,10 +57,21 @@ func (r *FileNodeREST) Create(ctx context.Context, obj runtime.Object, createVal
 		log.Infof("unable to connect to user cluster %v", err)
 		return nil, errors.NewInternalError(fmt.Errorf("test to not implemented log filenode"))
 	}
-	nodes, err := client.CoreV1().Nodes().List(metav1.ListOptions{})
+	_, err = client.CoreV1().Nodes().List(metav1.ListOptions{})
 	if err != nil {
 		log.Infof("unable to get cluster nodes")
 	}
-	log.Infof("my nodes are %+v", nodes)
+	//log.Infof("my nodes are %+v", nodes)
+
+	pod, err := client.CoreV1().Pods(fileNode.Spec.Namespace).Get(fileNode.Spec.Pod,metav1.GetOptions{})
+	if err != nil {
+		log.Errorf("unable to get pod %v", err)
+		return nil, errors.NewInternalError(fmt.Errorf("test to not implemented log filenode"))
+	}
+	hostip := pod.Status.HostIP
+	res := util.GetPodFileTree( util.FileNodeRequest{fileNode.Spec.Pod, fileNode.Spec.Namespace, fileNode.Spec.Container}, hostip)
+
+	log.Infof("get file node results %v", res)
+	//return nil, nil
 	return nil, errors.NewInternalError(fmt.Errorf("test to not implemented log filenode"))
 }
