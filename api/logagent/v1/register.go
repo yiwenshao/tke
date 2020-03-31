@@ -51,8 +51,9 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&LogAgent{},
 		&LogAgentList{},
 		&LogFileTree{},
-		//&LogFileContent{},
-		//&LogFileDownload{},
+		&LogCollector{},
+		&LogCollectorList{},
+		&APIKeyReq{},
 	)
 	metav1.AddToGroupVersion(scheme, SchemeGroupVersion)
 	return nil

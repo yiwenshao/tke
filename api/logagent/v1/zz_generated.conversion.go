@@ -37,6 +37,16 @@ func init() {
 // RegisterConversions adds conversion functions to the given scheme.
 // Public to allow building arbitrary schemes.
 func RegisterConversions(s *runtime.Scheme) error {
+	if err := s.AddGeneratedConversionFunc((*APIKeyReq)(nil), (*logagent.APIKeyReq)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1_APIKeyReq_To_logagent_APIKeyReq(a.(*APIKeyReq), b.(*logagent.APIKeyReq), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*logagent.APIKeyReq)(nil), (*APIKeyReq)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_logagent_APIKeyReq_To_v1_APIKeyReq(a.(*logagent.APIKeyReq), b.(*APIKeyReq), scope)
+	}); err != nil {
+		return err
+	}
 	if err := s.AddGeneratedConversionFunc((*LogAgent)(nil), (*logagent.LogAgent)(nil), func(a, b interface{}, scope conversion.Scope) error {
 		return Convert_v1_LogAgent_To_logagent_LogAgent(a.(*LogAgent), b.(*logagent.LogAgent), scope)
 	}); err != nil {
@@ -77,6 +87,46 @@ func RegisterConversions(s *runtime.Scheme) error {
 	}); err != nil {
 		return err
 	}
+	if err := s.AddGeneratedConversionFunc((*LogCollector)(nil), (*logagent.LogCollector)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1_LogCollector_To_logagent_LogCollector(a.(*LogCollector), b.(*logagent.LogCollector), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*logagent.LogCollector)(nil), (*LogCollector)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_logagent_LogCollector_To_v1_LogCollector(a.(*logagent.LogCollector), b.(*LogCollector), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*LogCollectorList)(nil), (*logagent.LogCollectorList)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1_LogCollectorList_To_logagent_LogCollectorList(a.(*LogCollectorList), b.(*logagent.LogCollectorList), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*logagent.LogCollectorList)(nil), (*LogCollectorList)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_logagent_LogCollectorList_To_v1_LogCollectorList(a.(*logagent.LogCollectorList), b.(*LogCollectorList), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*LogCollectorSpec)(nil), (*logagent.LogCollectorSpec)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1_LogCollectorSpec_To_logagent_LogCollectorSpec(a.(*LogCollectorSpec), b.(*logagent.LogCollectorSpec), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*logagent.LogCollectorSpec)(nil), (*LogCollectorSpec)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_logagent_LogCollectorSpec_To_v1_LogCollectorSpec(a.(*logagent.LogCollectorSpec), b.(*LogCollectorSpec), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*LogCollectorStatus)(nil), (*logagent.LogCollectorStatus)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1_LogCollectorStatus_To_logagent_LogCollectorStatus(a.(*LogCollectorStatus), b.(*logagent.LogCollectorStatus), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*logagent.LogCollectorStatus)(nil), (*LogCollectorStatus)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_logagent_LogCollectorStatus_To_v1_LogCollectorStatus(a.(*logagent.LogCollectorStatus), b.(*LogCollectorStatus), scope)
+	}); err != nil {
+		return err
+	}
 	if err := s.AddGeneratedConversionFunc((*LogFileTree)(nil), (*logagent.LogFileTree)(nil), func(a, b interface{}, scope conversion.Scope) error {
 		return Convert_v1_LogFileTree_To_logagent_LogFileTree(a.(*LogFileTree), b.(*logagent.LogFileTree), scope)
 	}); err != nil {
@@ -87,7 +137,45 @@ func RegisterConversions(s *runtime.Scheme) error {
 	}); err != nil {
 		return err
 	}
+	if err := s.AddGeneratedConversionFunc((*LogFileTreeSpec)(nil), (*logagent.LogFileTreeSpec)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_v1_LogFileTreeSpec_To_logagent_LogFileTreeSpec(a.(*LogFileTreeSpec), b.(*logagent.LogFileTreeSpec), scope)
+	}); err != nil {
+		return err
+	}
+	if err := s.AddGeneratedConversionFunc((*logagent.LogFileTreeSpec)(nil), (*LogFileTreeSpec)(nil), func(a, b interface{}, scope conversion.Scope) error {
+		return Convert_logagent_LogFileTreeSpec_To_v1_LogFileTreeSpec(a.(*logagent.LogFileTreeSpec), b.(*LogFileTreeSpec), scope)
+	}); err != nil {
+		return err
+	}
 	return nil
+}
+
+func autoConvert_v1_APIKeyReq_To_logagent_APIKeyReq(in *APIKeyReq, out *logagent.APIKeyReq, s conversion.Scope) error {
+	out.Expire = in.Expire
+	out.Description = in.Description
+	if err := Convert_v1_LogFileTreeSpec_To_logagent_LogFileTreeSpec(&in.Spec, &out.Spec, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_v1_APIKeyReq_To_logagent_APIKeyReq is an autogenerated conversion function.
+func Convert_v1_APIKeyReq_To_logagent_APIKeyReq(in *APIKeyReq, out *logagent.APIKeyReq, s conversion.Scope) error {
+	return autoConvert_v1_APIKeyReq_To_logagent_APIKeyReq(in, out, s)
+}
+
+func autoConvert_logagent_APIKeyReq_To_v1_APIKeyReq(in *logagent.APIKeyReq, out *APIKeyReq, s conversion.Scope) error {
+	out.Expire = in.Expire
+	out.Description = in.Description
+	if err := Convert_logagent_LogFileTreeSpec_To_v1_LogFileTreeSpec(&in.Spec, &out.Spec, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_logagent_APIKeyReq_To_v1_APIKeyReq is an autogenerated conversion function.
+func Convert_logagent_APIKeyReq_To_v1_APIKeyReq(in *logagent.APIKeyReq, out *APIKeyReq, s conversion.Scope) error {
+	return autoConvert_logagent_APIKeyReq_To_v1_APIKeyReq(in, out, s)
 }
 
 func autoConvert_v1_LogAgent_To_logagent_LogAgent(in *LogAgent, out *logagent.LogAgent, s conversion.Scope) error {
@@ -196,12 +284,110 @@ func Convert_logagent_LogAgentStatus_To_v1_LogAgentStatus(in *logagent.LogAgentS
 	return autoConvert_logagent_LogAgentStatus_To_v1_LogAgentStatus(in, out, s)
 }
 
+func autoConvert_v1_LogCollector_To_logagent_LogCollector(in *LogCollector, out *logagent.LogCollector, s conversion.Scope) error {
+	out.ObjectMeta = in.ObjectMeta
+	if err := Convert_v1_LogCollectorSpec_To_logagent_LogCollectorSpec(&in.Spec, &out.Spec, s); err != nil {
+		return err
+	}
+	if err := Convert_v1_LogCollectorStatus_To_logagent_LogCollectorStatus(&in.Status, &out.Status, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_v1_LogCollector_To_logagent_LogCollector is an autogenerated conversion function.
+func Convert_v1_LogCollector_To_logagent_LogCollector(in *LogCollector, out *logagent.LogCollector, s conversion.Scope) error {
+	return autoConvert_v1_LogCollector_To_logagent_LogCollector(in, out, s)
+}
+
+func autoConvert_logagent_LogCollector_To_v1_LogCollector(in *logagent.LogCollector, out *LogCollector, s conversion.Scope) error {
+	out.ObjectMeta = in.ObjectMeta
+	if err := Convert_logagent_LogCollectorSpec_To_v1_LogCollectorSpec(&in.Spec, &out.Spec, s); err != nil {
+		return err
+	}
+	if err := Convert_logagent_LogCollectorStatus_To_v1_LogCollectorStatus(&in.Status, &out.Status, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_logagent_LogCollector_To_v1_LogCollector is an autogenerated conversion function.
+func Convert_logagent_LogCollector_To_v1_LogCollector(in *logagent.LogCollector, out *LogCollector, s conversion.Scope) error {
+	return autoConvert_logagent_LogCollector_To_v1_LogCollector(in, out, s)
+}
+
+func autoConvert_v1_LogCollectorList_To_logagent_LogCollectorList(in *LogCollectorList, out *logagent.LogCollectorList, s conversion.Scope) error {
+	out.ListMeta = in.ListMeta
+	out.Items = *(*[]logagent.LogCollector)(unsafe.Pointer(&in.Items))
+	return nil
+}
+
+// Convert_v1_LogCollectorList_To_logagent_LogCollectorList is an autogenerated conversion function.
+func Convert_v1_LogCollectorList_To_logagent_LogCollectorList(in *LogCollectorList, out *logagent.LogCollectorList, s conversion.Scope) error {
+	return autoConvert_v1_LogCollectorList_To_logagent_LogCollectorList(in, out, s)
+}
+
+func autoConvert_logagent_LogCollectorList_To_v1_LogCollectorList(in *logagent.LogCollectorList, out *LogCollectorList, s conversion.Scope) error {
+	out.ListMeta = in.ListMeta
+	out.Items = *(*[]LogCollector)(unsafe.Pointer(&in.Items))
+	return nil
+}
+
+// Convert_logagent_LogCollectorList_To_v1_LogCollectorList is an autogenerated conversion function.
+func Convert_logagent_LogCollectorList_To_v1_LogCollectorList(in *logagent.LogCollectorList, out *LogCollectorList, s conversion.Scope) error {
+	return autoConvert_logagent_LogCollectorList_To_v1_LogCollectorList(in, out, s)
+}
+
+func autoConvert_v1_LogCollectorSpec_To_logagent_LogCollectorSpec(in *LogCollectorSpec, out *logagent.LogCollectorSpec, s conversion.Scope) error {
+	out.TenantID = in.TenantID
+	out.ClusterName = in.ClusterName
+	out.Description = in.Description
+	return nil
+}
+
+// Convert_v1_LogCollectorSpec_To_logagent_LogCollectorSpec is an autogenerated conversion function.
+func Convert_v1_LogCollectorSpec_To_logagent_LogCollectorSpec(in *LogCollectorSpec, out *logagent.LogCollectorSpec, s conversion.Scope) error {
+	return autoConvert_v1_LogCollectorSpec_To_logagent_LogCollectorSpec(in, out, s)
+}
+
+func autoConvert_logagent_LogCollectorSpec_To_v1_LogCollectorSpec(in *logagent.LogCollectorSpec, out *LogCollectorSpec, s conversion.Scope) error {
+	out.TenantID = in.TenantID
+	out.ClusterName = in.ClusterName
+	out.Description = in.Description
+	return nil
+}
+
+// Convert_logagent_LogCollectorSpec_To_v1_LogCollectorSpec is an autogenerated conversion function.
+func Convert_logagent_LogCollectorSpec_To_v1_LogCollectorSpec(in *logagent.LogCollectorSpec, out *LogCollectorSpec, s conversion.Scope) error {
+	return autoConvert_logagent_LogCollectorSpec_To_v1_LogCollectorSpec(in, out, s)
+}
+
+func autoConvert_v1_LogCollectorStatus_To_logagent_LogCollectorStatus(in *LogCollectorStatus, out *logagent.LogCollectorStatus, s conversion.Scope) error {
+	out.Input = in.Input
+	out.Output = in.Output
+	return nil
+}
+
+// Convert_v1_LogCollectorStatus_To_logagent_LogCollectorStatus is an autogenerated conversion function.
+func Convert_v1_LogCollectorStatus_To_logagent_LogCollectorStatus(in *LogCollectorStatus, out *logagent.LogCollectorStatus, s conversion.Scope) error {
+	return autoConvert_v1_LogCollectorStatus_To_logagent_LogCollectorStatus(in, out, s)
+}
+
+func autoConvert_logagent_LogCollectorStatus_To_v1_LogCollectorStatus(in *logagent.LogCollectorStatus, out *LogCollectorStatus, s conversion.Scope) error {
+	out.Input = in.Input
+	out.Output = in.Output
+	return nil
+}
+
+// Convert_logagent_LogCollectorStatus_To_v1_LogCollectorStatus is an autogenerated conversion function.
+func Convert_logagent_LogCollectorStatus_To_v1_LogCollectorStatus(in *logagent.LogCollectorStatus, out *LogCollectorStatus, s conversion.Scope) error {
+	return autoConvert_logagent_LogCollectorStatus_To_v1_LogCollectorStatus(in, out, s)
+}
+
 func autoConvert_v1_LogFileTree_To_logagent_LogFileTree(in *LogFileTree, out *logagent.LogFileTree, s conversion.Scope) error {
-	out.ClusterId = in.ClusterId
-	out.Namespace = in.Namespace
-	out.Name = in.Name
-	out.Container = in.Container
-	out.Pod = in.Pod
+	if err := Convert_v1_LogFileTreeSpec_To_logagent_LogFileTreeSpec(&in.Spec, &out.Spec, s); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -211,6 +397,18 @@ func Convert_v1_LogFileTree_To_logagent_LogFileTree(in *LogFileTree, out *logage
 }
 
 func autoConvert_logagent_LogFileTree_To_v1_LogFileTree(in *logagent.LogFileTree, out *LogFileTree, s conversion.Scope) error {
+	if err := Convert_logagent_LogFileTreeSpec_To_v1_LogFileTreeSpec(&in.Spec, &out.Spec, s); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Convert_logagent_LogFileTree_To_v1_LogFileTree is an autogenerated conversion function.
+func Convert_logagent_LogFileTree_To_v1_LogFileTree(in *logagent.LogFileTree, out *LogFileTree, s conversion.Scope) error {
+	return autoConvert_logagent_LogFileTree_To_v1_LogFileTree(in, out, s)
+}
+
+func autoConvert_v1_LogFileTreeSpec_To_logagent_LogFileTreeSpec(in *LogFileTreeSpec, out *logagent.LogFileTreeSpec, s conversion.Scope) error {
 	out.ClusterId = in.ClusterId
 	out.Namespace = in.Namespace
 	out.Name = in.Name
@@ -219,7 +417,21 @@ func autoConvert_logagent_LogFileTree_To_v1_LogFileTree(in *logagent.LogFileTree
 	return nil
 }
 
-// Convert_logagent_LogFileTree_To_v1_LogFileTree is an autogenerated conversion function.
-func Convert_logagent_LogFileTree_To_v1_LogFileTree(in *logagent.LogFileTree, out *LogFileTree, s conversion.Scope) error {
-	return autoConvert_logagent_LogFileTree_To_v1_LogFileTree(in, out, s)
+// Convert_v1_LogFileTreeSpec_To_logagent_LogFileTreeSpec is an autogenerated conversion function.
+func Convert_v1_LogFileTreeSpec_To_logagent_LogFileTreeSpec(in *LogFileTreeSpec, out *logagent.LogFileTreeSpec, s conversion.Scope) error {
+	return autoConvert_v1_LogFileTreeSpec_To_logagent_LogFileTreeSpec(in, out, s)
+}
+
+func autoConvert_logagent_LogFileTreeSpec_To_v1_LogFileTreeSpec(in *logagent.LogFileTreeSpec, out *LogFileTreeSpec, s conversion.Scope) error {
+	out.ClusterId = in.ClusterId
+	out.Namespace = in.Namespace
+	out.Name = in.Name
+	out.Container = in.Container
+	out.Pod = in.Pod
+	return nil
+}
+
+// Convert_logagent_LogFileTreeSpec_To_v1_LogFileTreeSpec is an autogenerated conversion function.
+func Convert_logagent_LogFileTreeSpec_To_v1_LogFileTreeSpec(in *logagent.LogFileTreeSpec, out *LogFileTreeSpec, s conversion.Scope) error {
+	return autoConvert_logagent_LogFileTreeSpec_To_v1_LogFileTreeSpec(in, out, s)
 }

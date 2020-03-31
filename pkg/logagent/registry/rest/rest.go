@@ -43,6 +43,8 @@ func (s *StorageProvider) v1Storage(apiResourceConfigSource serverstorage.APIRes
 		logagentRest := logagentstorage.NewStorage(restOptionsGetter, s.PrivilegedUsername)
 		storageMap["logagents"] = logagentRest.LogAgent
 		storageMap["logagents/status"] = logagentRest.Status
+		storageMap["logagents/filetree"] = logagentRest.LogFileTree
+		storageMap["logagents/token"] = logagentRest.Token
 	}
 	return storageMap
 }

@@ -77,8 +77,7 @@ func (c completedConfig) New(delegationTarget genericapiserver.DelegationTarget)
 		},
 	}
 	m.InstallAPIs(c.ExtraConfig.APIResourceConfigSource, c.GenericConfig.RESTOptionsGetter, restStorageProviders...)
-	log.Info("All of http handlers registered", log.Strings("paths", m.GenericAPIServer.Handler.ListedPaths()))
-
+	log.Info("All of http handlers registered in server", log.Strings("paths", m.GenericAPIServer.Handler.ListedPaths()))
 	return m, nil
 }
 
@@ -108,9 +107,11 @@ func (m *APIServer) InstallAPIs(apiResourceConfigSource serverstorage.APIResourc
 		}
 
 		apiGroupsInfo = append(apiGroupsInfo, apiGroupInfo)
+
 	}
 
 	for i := range apiGroupsInfo {
+		log.Infof("install apigroup info here %+v", apiGroupsInfo[i])
 		if err := m.GenericAPIServer.InstallAPIGroup(&apiGroupsInfo[i]); err != nil {
 			log.Fatalf("Error in registering group versions: %v", err)
 		}

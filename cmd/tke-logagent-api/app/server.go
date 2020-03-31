@@ -30,6 +30,7 @@ func CreateServerChain(cfg *config.Config) (*genericapiserver.GenericAPIServer, 
 
 // CreateAPIServer creates and wires a workable tke-auth.
 func CreateAPIServer(logagentConfig *apiserver.Config, delegateAPIServer genericapiserver.DelegationTarget) (*apiserver.APIServer, error) {
+	log.Infof("create apiserver")
 	return logagentConfig.Complete().New(delegateAPIServer)
 }
 
@@ -57,6 +58,6 @@ func createFilterChain(apiServer *genericapiserver.GenericAPIServer) {
 
 func registerHandler(apiServer *apiserver.APIServer) error {
 	createFilterChain(apiServer.GenericAPIServer)
-	log.Info("All of http handlers registered", log.Strings("paths", apiServer.GenericAPIServer.Handler.ListedPaths()))
+	log.Info("All of http handlers registered in cmd", log.Strings("paths", apiServer.GenericAPIServer.Handler.ListedPaths()))
 	return nil
 }

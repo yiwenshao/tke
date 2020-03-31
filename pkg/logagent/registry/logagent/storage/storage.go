@@ -19,6 +19,8 @@ import (
 
 type Storage struct {
 	LogAgent *REST
+	LogFileTree *FileNodeREST
+	Token     *TokenREST
 	Status   *StatusREST
 }
 
@@ -53,6 +55,8 @@ func NewStorage(optsGetter genericregistry.RESTOptionsGetter, privilegedUsername
 
 	return &Storage{
 		LogAgent:     &REST{store, privilegedUsername},
+		LogFileTree:  &FileNodeREST{store},
+		Token: &TokenREST{store},
 		Status:       &StatusREST{&statusStore},
 	}
 
