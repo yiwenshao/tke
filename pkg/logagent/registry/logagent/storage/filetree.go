@@ -8,8 +8,10 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apiserver/pkg/registry/generic/registry"
 	"k8s.io/apiserver/pkg/registry/rest"
+	platformversionedclient "tkestack.io/tke/api/client/clientset/versioned/typed/platform/v1"
 	"tkestack.io/tke/api/logagent"
 	"tkestack.io/tke/pkg/apiserver/authentication"
+	"tkestack.io/tke/pkg/logagent/util"
 	"tkestack.io/tke/pkg/util/log"
 )
 
@@ -18,6 +20,7 @@ type FileNodeREST struct {
 	//apiKeyStore *registry.Store
 	//rest.Storage
 	apiKeyStore *registry.Store
+	PlatformClient platformversionedclient.PlatformV1Interface
 	//*registry.Store
 }
 
@@ -48,5 +51,16 @@ func (r *FileNodeREST) Create(ctx context.Context, obj runtime.Object, createVal
 	userName, tenantID := authentication.GetUsernameAndTenantID(ctx)
 	fileNode := obj.(*logagent.LogFileTree)
 	log.Infof("get userNmae %v tenantId %v and fileNode spec=%+v", userName, tenantID, fileNode.Spec)
+
+	client, err := util.GetClusterClient(fileNode.Spec.ClusterId,r.PlatformClient)
+	if err != nil {
+		log.Infof("unable to connect to user cluster %v", err)
+		return nil, errors.NewInternalError(fmt.Errorf("test to not implemented log filenode"))
+	}
+	nodes, err := client.CoreV1().Nodes().List(metav1.ListOptions{})
+	if err != nil {
+		log.Infof("unable to get cluster nodes")
+	}
+	log.Infof("my nodes are %+v", nodes)
 	return nil, errors.NewInternalError(fmt.Errorf("test to not implemented log filenode"))
 }

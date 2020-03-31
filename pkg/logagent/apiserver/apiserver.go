@@ -74,6 +74,7 @@ func (c completedConfig) New(delegationTarget genericapiserver.DelegationTarget)
 		&logagentrest.StorageProvider{
 		LoopbackClientConfig: c.GenericConfig.LoopbackClientConfig,
 		PrivilegedUsername:   c.ExtraConfig.PrivilegedUsername,
+		PlatformClient: c.ExtraConfig.PlatformClient,
 		},
 	}
 	m.InstallAPIs(c.ExtraConfig.APIResourceConfigSource, c.GenericConfig.RESTOptionsGetter, restStorageProviders...)

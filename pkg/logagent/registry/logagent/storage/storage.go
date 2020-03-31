@@ -9,6 +9,7 @@ import (
 	genericregistry "k8s.io/apiserver/pkg/registry/generic"
 	"k8s.io/apiserver/pkg/registry/generic/registry"
 	"k8s.io/apiserver/pkg/registry/rest"
+	platformversionedclient "tkestack.io/tke/api/client/clientset/versioned/typed/platform/v1"
 	"tkestack.io/tke/api/logagent"
 	"tkestack.io/tke/pkg/apiserver/authentication"
 	apiserverutil "tkestack.io/tke/pkg/apiserver/util"
@@ -25,7 +26,7 @@ type Storage struct {
 }
 
 // NewStorage returns a Storage object that will work against channels.
-func NewStorage(optsGetter genericregistry.RESTOptionsGetter, privilegedUsername string) *Storage {
+func NewStorage(optsGetter genericregistry.RESTOptionsGetter, privilegedUsername string, platformClient platformversionedclient.PlatformV1Interface) *Storage {
 	strategy := registrylogagent.NewStrategy()
 
 	store := &registry.Store{
@@ -55,7 +56,7 @@ func NewStorage(optsGetter genericregistry.RESTOptionsGetter, privilegedUsername
 
 	return &Storage{
 		LogAgent:     &REST{store, privilegedUsername},
-		LogFileTree:  &FileNodeREST{store},
+		LogFileTree:  &FileNodeREST{store, platformClient},
 		Token: &TokenREST{store},
 		Status:       &StatusREST{&statusStore},
 	}
