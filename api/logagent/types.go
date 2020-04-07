@@ -106,6 +106,16 @@ type LogAgentStatus struct {
 	LastReInitializingTimestamp metav1.Time
 }
 
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+// LogAgentProxyOptions is the query options to a kube-apiserver proxy call for LogAgent crd object.
+type LogAgentProxyOptions struct {
+	metav1.TypeMeta `json:",inline"`
+
+	Namespace string `json:"namespace,omitempty"`
+	Name      string `json:"name,omitempty"`
+}
+
 
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
@@ -122,6 +132,47 @@ type LogFileTreeSpec struct {
 	Name      string `json:"name,omitempty"`
 	Container string `json:"container,omitempty"`
 	Pod       string `json:"pod,omitempty"`
+}
+
+
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+// LogFileContent
+type LogFileContent struct {
+	metav1.TypeMeta `json:",inline"`
+	Spec            LogFileTreeSpec `json:"spec"`
+}
+
+type LogFileContentSpec struct {
+	ClusterId string `json:"clusterId,omitempty"`
+	Namespace string `json:"namespace,omitempty"`
+	Name      string `json:"name,omitempty"`
+	Container string `json:"container,omitempty"`
+	Pod       string `json:"pod,omitempty"`
+	Start     int32  `json:"start,omitempty"`
+	Length    int32  `json:"length,omitempty"`
+	Filepath  string `json:"filepath,omitempty"`
+}
+
+
+
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+// LogFileContent
+type LogFileDownload struct {
+	metav1.TypeMeta `json:",inline"`
+	Spec            LogFileTreeSpec `json:"spec"`
+}
+
+type LogFileDownloadSpec struct {
+	ClusterId string `json:"clusterId,omitempty"`
+	Namespace string `json:"namespace,omitempty"`
+	Name      string `json:"name,omitempty"`
+	Container string `json:"container,omitempty"`
+	Pod       string `json:"pod,omitempty"`
+	Start     int32  `json:"start,omitempty"`
+	Length    int32  `json:"length,omitempty"`
+	Filepath  string `json:"filepath,omitempty"`
 }
 
 
@@ -159,55 +210,55 @@ type LogFileTreeSpec struct {
 //}
 
 
-
-// +genclient
-// +genclient:nonNamespaced
-// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-
-type LogCollector struct {
-	metav1.TypeMeta
-	metav1.ObjectMeta
-	Spec              LogCollectorSpec
-	Status            LogCollectorStatus
-}
-
-// +genclient:nonNamespaced
-// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-
-type LogCollectorList struct {
-	metav1.TypeMeta
-	metav1.ListMeta
-	Items           []LogCollector
-}
-
-// LogCollectorSpec
-type LogCollectorSpec struct {
-	TenantID    string
-	ClusterName string
-	Description string
-}
-
-// TODO: Add useful information, such as conditions, etc.
-type LogCollectorStatus struct {
-	// +optional
-	Input  string
-	// +optional
-	Output string
-}
-
-
-// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-
-// APIKeyReq contains expiration time used to apply the api key.
-type APIKeyReq struct {
-	metav1.TypeMeta
-
-	// Expire is required, holds the duration of the api key become invalid. By default, 168h(= seven days)
-	Expire metav1.Duration `json:"expire,omitempty"`
-
-	// Description describes api keys usage.
-	Description string `json:"description"`
-
-	// +optional
-	Spec LogFileTreeSpec `json:"spec"`
-}
+//
+//// +genclient
+//// +genclient:nonNamespaced
+//// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+//
+//type LogCollector struct {
+//	metav1.TypeMeta
+//	metav1.ObjectMeta
+//	Spec              LogCollectorSpec
+//	Status            LogCollectorStatus
+//}
+//
+//// +genclient:nonNamespaced
+//// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+//
+//type LogCollectorList struct {
+//	metav1.TypeMeta
+//	metav1.ListMeta
+//	Items           []LogCollector
+//}
+//
+//// LogCollectorSpec
+//type LogCollectorSpec struct {
+//	TenantID    string
+//	ClusterName string
+//	Description string
+//}
+//
+//// TODO: Add useful information, such as conditions, etc.
+//type LogCollectorStatus struct {
+//	// +optional
+//	Input  string
+//	// +optional
+//	Output string
+//}
+//
+//
+//// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+//
+//// APIKeyReq contains expiration time used to apply the api key.
+//type APIKeyReq struct {
+//	metav1.TypeMeta
+//
+//	// Expire is required, holds the duration of the api key become invalid. By default, 168h(= seven days)
+//	Expire metav1.Duration `json:"expire,omitempty"`
+//
+//	// Description describes api keys usage.
+//	Description string `json:"description"`
+//
+//	// +optional
+//	Spec LogFileTreeSpec `json:"spec"`
+//}

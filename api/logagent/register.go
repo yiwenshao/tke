@@ -62,10 +62,10 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 	scheme.AddKnownTypes(SchemeGroupVersion,
 		&LogAgent{},
 		&LogAgentList{},
+		&LogAgentProxyOptions{},
 		&LogFileTree{},
-		&LogCollector{},
-		&LogCollectorList{},
-		&APIKeyReq{},
+		&LogFileContent{},
+		&LogFileDownload{},
 		//&LogFileDownload{},
 		//&LogFileContent{},
 		)

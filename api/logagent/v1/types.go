@@ -38,14 +38,6 @@ const (
 	AddonPhaseUpgrading AddonPhase = "Upgrading"
 	// AddonPhaseFailed means has been failed.
 	AddonPhaseFailed AddonPhase = "Failed"
-	// AddonPhasePending means the controller is proceeding deploying
-	AddonPhasePending AddonPhase = "Pending"
-	// AddonPhaseUnhealthy means some pods of GPUManager is partial running
-	AddonPhaseUnhealthy AddonPhase = "Unhealthy"
-	// AddonPhaseTerminating means addon terminating
-	AddonPhaseTerminating AddonPhase = "Terminating"
-	// AddonPhaseUnknown means addon unknown
-	AddonPhaseUnknown AddonPhase = "Unknown"
 )
 
 // +genclient
@@ -106,6 +98,16 @@ type LogAgentStatus struct {
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
+// LogAgentProxyOptions is the query options to a kube-apiserver proxy call for LogAgent crd object.
+type LogAgentProxyOptions struct {
+	metav1.TypeMeta `json:",inline"`
+
+	Namespace string `json:"namespace,omitempty" protobuf:"bytes,1,opt,name=namespace"`
+	Name      string `json:"name,omitempty" protobuf:"bytes,2,opt,name=name"`
+}
+
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
 // LogFileTree
 type LogFileTree struct {
 	metav1.TypeMeta `json:",inline"`
@@ -118,6 +120,44 @@ type LogFileTreeSpec struct {
 	Name      string `json:"name,omitempty" protobuf:"bytes,3,opt,name=name"`
 	Container string `json:"container,omitempty" protobuf:"bytes,4,opt,name=container"`
 	Pod       string `json:"pod,omitempty" protobuf:"bytes,5,opt,name=pod"`
+}
+
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+// LogFileContent
+type LogFileContent struct {
+	metav1.TypeMeta `json:",inline"`
+	Spec            LogFileTreeSpec `json:"spec" protobuf:"bytes,2,opt,name=spec"`
+}
+
+type LogFileContentSpec struct {
+	ClusterId string `json:"clusterId,omitempty" protobuf:"bytes,1,opt,name=clusterId"`
+	Namespace string `json:"namespace,omitempty" protobuf:"bytes,2,opt,name=namespace"`
+	Name      string `json:"name,omitempty" protobuf:"bytes,3,opt,name=name"`
+	Container string `json:"container,omitempty" protobuf:"bytes,4,opt,name=container"`
+	Pod       string `json:"pod,omitempty" protobuf:"bytes,5,opt,name=pod"`
+	Start     int32  `json:"start,omitempty" protobuf:"varint,6,opt,name=start"`
+	Length    int32  `json:"length,omitempty" protobuf:"varint,7,opt,name=length"`
+	Filepath  string `json:"filepath,omitempty" protobuf:"bytes,8,opt,name=filepath"`
+}
+
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+// LogFileContent
+type LogFileDownload struct {
+	metav1.TypeMeta `json:",inline"`
+	Spec            LogFileTreeSpec `json:"spec" protobuf:"bytes,2,opt,name=spec"`
+}
+
+type LogFileDownloadSpec struct {
+	ClusterId string `json:"clusterId,omitempty" protobuf:"bytes,1,opt,name=clusterId"`
+	Namespace string `json:"namespace,omitempty" protobuf:"bytes,2,opt,name=namespace"`
+	Name      string `json:"name,omitempty" protobuf:"bytes,3,opt,name=name"`
+	Container string `json:"container,omitempty" protobuf:"bytes,4,opt,name=container"`
+	Pod       string `json:"pod,omitempty" protobuf:"bytes,5,opt,name=pod"`
+	Start     int32  `json:"start,omitempty" protobuf:"varint,6,opt,name=start"`
+	Length    int32  `json:"length,omitempty" protobuf:"varint,7,opt,name=length"`
+	Filepath  string `json:"filepath,omitempty" protobuf:"bytes,8,opt,name=filepath"`
 }
 
 //// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
@@ -156,50 +196,50 @@ type LogFileTreeSpec struct {
 // +genclient:nonNamespaced
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-type LogCollector struct {
-	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=metadata"`
-	Spec              LogCollectorSpec   `json:"spec,omitempty" protobuf:"bytes,2,opt,name=spec"`
-	Status            LogCollectorStatus `json:"status,omitempty" protobuf:"bytes,3,opt,name=status"`
-}
-
-// +genclient:nonNamespaced
-// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-
-type LogCollectorList struct {
-	metav1.TypeMeta `json:",inline"`
-	metav1.ListMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=metadata"`
-	Items           []LogCollector `json:"items" protobuf:"bytes,2,opt,name=items"`
-}
-
-// LogCollectorSpec
-type LogCollectorSpec struct {
-	TenantID    string `json:"tenantID" protobuf:"bytes,1,opt,name=tenantID"`
-	ClusterName string `json:"clusterName" protobuf:"bytes,2,opt,name=clusterName"`
-	Description string `json:"description" protobuf:"bytes,3,opt,name=description"`
-}
-
-// TODO: Add useful information, such as conditions, etc.
-type LogCollectorStatus struct {
-	// +optional
-	Input string `json:"input,omitempty" protobuf:"bytes,1,opt,name=input"`
-	// +optional
-	Output string `json:"output,omitempty" protobuf:"bytes,2,opt,name=output"`
-}
-
-// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-
-// APIKeyReq contains expiration time used to apply the api key.
-type APIKeyReq struct {
-	metav1.TypeMeta `json:",inline"`
-
-	// Expire is required, holds the duration of the api key become invalid. By default, 168h(= seven days)
-	// +optional
-	Expire metav1.Duration `json:"expire,omitempty" protobuf:"bytes,2,opt,name=expire"`
-
-	// Description describes api keys usage.
-	Description string `json:"description" protobuf:"bytes,3,opt,name=description"`
-
-	// +optional
-	Spec LogFileTreeSpec `json:"spec" protobuf:"bytes,4,opt,name=spec"`
-}
+//type LogCollector struct {
+//	metav1.TypeMeta   `json:",inline"`
+//	metav1.ObjectMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=metadata"`
+//	Spec              LogCollectorSpec   `json:"spec,omitempty" protobuf:"bytes,2,opt,name=spec"`
+//	Status            LogCollectorStatus `json:"status,omitempty" protobuf:"bytes,3,opt,name=status"`
+//}
+//
+//// +genclient:nonNamespaced
+//// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+//
+//type LogCollectorList struct {
+//	metav1.TypeMeta `json:",inline"`
+//	metav1.ListMeta `json:"metadata,omitempty" protobuf:"bytes,1,opt,name=metadata"`
+//	Items           []LogCollector `json:"items" protobuf:"bytes,2,opt,name=items"`
+//}
+//
+//// LogCollectorSpec
+//type LogCollectorSpec struct {
+//	TenantID    string `json:"tenantID" protobuf:"bytes,1,opt,name=tenantID"`
+//	ClusterName string `json:"clusterName" protobuf:"bytes,2,opt,name=clusterName"`
+//	Description string `json:"description" protobuf:"bytes,3,opt,name=description"`
+//}
+//
+//// TODO: Add useful information, such as conditions, etc.
+//type LogCollectorStatus struct {
+//	// +optional
+//	Input string `json:"input,omitempty" protobuf:"bytes,1,opt,name=input"`
+//	// +optional
+//	Output string `json:"output,omitempty" protobuf:"bytes,2,opt,name=output"`
+//}
+//
+//// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+//
+//// APIKeyReq contains expiration time used to apply the api key.
+//type APIKeyReq struct {
+//	metav1.TypeMeta `json:",inline"`
+//
+//	// Expire is required, holds the duration of the api key become invalid. By default, 168h(= seven days)
+//	// +optional
+//	Expire metav1.Duration `json:"expire,omitempty" protobuf:"bytes,2,opt,name=expire"`
+//
+//	// Description describes api keys usage.
+//	Description string `json:"description" protobuf:"bytes,3,opt,name=description"`
+//
+//	// +optional
+//	Spec LogFileTreeSpec `json:"spec" protobuf:"bytes,4,opt,name=spec"`
+//}

@@ -6,6 +6,7 @@ import (
 	"sync"
 	platformversionedclient "tkestack.io/tke/api/client/clientset/versioned/typed/platform/v1"
 	"tkestack.io/tke/pkg/platform/util"
+	"tkestack.io/tke/pkg/util/log"
 )
 
 // ClusterNameToClient mapping cluster to kubernetes client
@@ -37,4 +38,20 @@ func GetClusterClient(clusterName string, platformClient platformversionedclient
 	ClusterNameToClient.Store(clusterName, kubeClient)
 
 	return kubeClient, nil
+}
+
+
+//use cache to optimize this function
+func GetClusterPodIp(clusterName, namespace, podName string, platformClient platformversionedclient.PlatformV1Interface) (string, error) {
+	client, err := GetClusterClient(clusterName, platformClient)
+	if err != nil {
+		log.Errorf("unable to get cluster client %v", err)
+		return "", err
+	}
+	pod, err := client.CoreV1().Pods(namespace).Get(podName, metav1.GetOptions{})
+	if err != nil {
+		log.Errorf("unable to get pod in cluster %v err=%v", clusterName, err)
+		return "", err
+	}
+	return pod.Status.HostIP, nil
 }

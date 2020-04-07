@@ -50,10 +50,10 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 	scheme.AddKnownTypes(SchemeGroupVersion,
 		&LogAgent{},
 		&LogAgentList{},
+		&LogAgentProxyOptions{},
 		&LogFileTree{},
-		&LogCollector{},
-		&LogCollectorList{},
-		&APIKeyReq{},
+		&LogFileContent{},
+		&LogFileDownload{},
 	)
 	metav1.AddToGroupVersion(scheme, SchemeGroupVersion)
 	return nil

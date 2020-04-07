@@ -6,7 +6,6 @@ import (
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apiserver/pkg/registry/generic/registry"
 	"k8s.io/apiserver/pkg/registry/rest"
 	platformversionedclient "tkestack.io/tke/api/client/clientset/versioned/typed/platform/v1"
@@ -45,16 +44,16 @@ func (r *FileNodeREST)  New() runtime.Object {
 //func (r *FileNodeREST) NamespaceScoped() bool {
 //	return false
 //}
-
-type  String string
-
-func (*String) GetObjectKind() schema.ObjectKind {
-	return schema.EmptyObjectKind
-}
-
-func (*String) DeepCopyObject() runtime.Object {
-	panic("String does not implement DeepCopyObject")
-}
+//
+//type  String string
+//
+//func (*String) GetObjectKind() schema.ObjectKind {
+//	return schema.EmptyObjectKind
+//}
+//
+//func (*String) DeepCopyObject() runtime.Object {
+//	panic("String does not implement DeepCopyObject")
+//}
 
 func (r *FileNodeREST) Create(ctx context.Context, obj runtime.Object, createValidation rest.ValidateObjectFunc, options *metav1.CreateOptions) (runtime.Object, error) {
 	//how to get the parent resource??
@@ -80,9 +79,9 @@ func (r *FileNodeREST) Create(ctx context.Context, obj runtime.Object, createVal
 		return nil, errors.NewInternalError(fmt.Errorf("test to not implemented log filenode"))
 	}
 	hostip := pod.Status.HostIP
-	res := util.GetPodFileTree( util.FileNodeRequest{fileNode.Spec.Pod, fileNode.Spec.Namespace, fileNode.Spec.Container}, hostip)
-
-	log.Infof("get file node results %v", res)
+	//res := util.GetPodFileTree( util.FileNodeRequest{fileNode.Spec.Pod, fileNode.Spec.Namespace, fileNode.Spec.Container}, hostip)
+	//
+	//log.Infof("get file node results %v", res)
 
 	//return nil, nil
 	//return &logagent.LogFileTree{

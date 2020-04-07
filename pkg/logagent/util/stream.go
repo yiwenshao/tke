@@ -38,47 +38,6 @@ func (obj *LocationStreamer) DeepCopyObject() runtime.Object {
 // InputStream returns a stream with the contents of the URL location. If no location is provided,
 // a null stream is returned.
 func (s *LocationStreamer) InputStream(ctx context.Context, apiVersion, acceptHeader string) (stream io.ReadCloser, flush bool, contentType string, err error) {
-	//if s.Location == nil {
-	//	// If no location was provided, return a null stream
-	//	return nil, false, "", nil
-	//}
-	//transport := s.Transport
-	//if transport == nil {
-	//	transport = http.DefaultTransport
-	//}
-	//
-	//client := &http.Client{
-	//	Transport:     transport,
-	//	CheckRedirect: s.RedirectChecker,
-	//}
-	//req, err := http.NewRequest("GET", s.Location.String(), nil)
-	//if err != nil {
-	//	return nil, false, "", fmt.Errorf("failed to construct request for %s, got %v", s.Location.String(), err)
-	//}
-	//// Pass the parent context down to the request to ensure that the resources
-	//// will be release properly.
-	//req = req.WithContext(ctx)
-	//
-	//resp, err := client.Do(req)
-	//if err != nil {
-	//	return nil, false, "", err
-	//}
-	//
-	//if s.ResponseChecker != nil {
-	//	if err = s.ResponseChecker.Check(resp); err != nil {
-	//		return nil, false, "", err
-	//	}
-	//}
-	//
-	//contentType = s.ContentType
-	//if len(contentType) == 0 {
-	//	contentType = resp.Header.Get("Content-Type")
-	//	if len(contentType) > 0 {
-	//		contentType = strings.TrimSpace(strings.SplitN(contentType, ";", 2)[0])
-	//	}
-	//}
-	//flush = s.Flush
-	//stream = resp.Body
 	stream = GetPodReader(s.Request,s.Ip)
 	flush = false
 	contentType = s.ContentType

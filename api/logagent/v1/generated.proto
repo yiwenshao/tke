@@ -29,19 +29,6 @@ import "k8s.io/apimachinery/pkg/runtime/schema/generated.proto";
 // Package-wide variables from generator "generated".
 option go_package = "v1";
 
-// APIKeyReq contains expiration time used to apply the api key.
-message APIKeyReq {
-  // Expire is required, holds the duration of the api key become invalid. By default, 168h(= seven days)
-  // +optional
-  optional k8s.io.apimachinery.pkg.apis.meta.v1.Duration expire = 2;
-
-  // Description describes api keys usage.
-  optional string description = 3;
-
-  // +optional
-  optional LogFileTreeSpec spec = 4;
-}
-
 // LogAgent is a manager to collect logs of workload.
 message LogAgent {
   // +optional
@@ -62,6 +49,13 @@ message LogAgentList {
 
   // List of volume decorators.
   repeated LogAgent items = 2;
+}
+
+// LogAgentProxyOptions is the query options to a kube-apiserver proxy call for LogAgent crd object.
+message LogAgentProxyOptions {
+  optional string namespace = 1;
+
+  optional string name = 2;
 }
 
 // LogCollectorSpec describes the attributes of a LogCollector.
@@ -95,36 +89,50 @@ message LogAgentStatus {
   optional k8s.io.apimachinery.pkg.apis.meta.v1.Time lastReInitializingTimestamp = 5;
 }
 
-message LogCollector {
-  optional k8s.io.apimachinery.pkg.apis.meta.v1.ObjectMeta metadata = 1;
-
-  optional LogCollectorSpec spec = 2;
-
-  optional LogCollectorStatus status = 3;
+// LogFileContent
+message LogFileContent {
+  optional LogFileTreeSpec spec = 2;
 }
 
-message LogCollectorList {
-  optional k8s.io.apimachinery.pkg.apis.meta.v1.ListMeta metadata = 1;
+message LogFileContentSpec {
+  optional string clusterId = 1;
 
-  repeated LogCollector items = 2;
+  optional string namespace = 2;
+
+  optional string name = 3;
+
+  optional string container = 4;
+
+  optional string pod = 5;
+
+  optional int32 start = 6;
+
+  optional int32 length = 7;
+
+  optional string filepath = 8;
 }
 
-// LogCollectorSpec
-message LogCollectorSpec {
-  optional string tenantID = 1;
-
-  optional string clusterName = 2;
-
-  optional string description = 3;
+// LogFileContent
+message LogFileDownload {
+  optional LogFileTreeSpec spec = 2;
 }
 
-// TODO: Add useful information, such as conditions, etc.
-message LogCollectorStatus {
-  // +optional
-  optional string input = 1;
+message LogFileDownloadSpec {
+  optional string clusterId = 1;
 
-  // +optional
-  optional string output = 2;
+  optional string namespace = 2;
+
+  optional string name = 3;
+
+  optional string container = 4;
+
+  optional string pod = 5;
+
+  optional int32 start = 6;
+
+  optional int32 length = 7;
+
+  optional string filepath = 8;
 }
 
 // LogFileTree
