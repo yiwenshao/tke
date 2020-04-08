@@ -66,8 +66,8 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&LogFileTree{},
 		&LogFileContent{},
 		&LogFileDownload{},
-		//&LogFileDownload{},
-		//&LogFileContent{},
+		&ConfigMap{},
+		&ConfigMapList{},
 		)
 	return nil
 }

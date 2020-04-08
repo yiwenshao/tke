@@ -54,6 +54,8 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&LogFileTree{},
 		&LogFileContent{},
 		&LogFileDownload{},
+		&ConfigMap{},
+		&ConfigMapList{},
 	)
 	metav1.AddToGroupVersion(scheme, SchemeGroupVersion)
 	return nil

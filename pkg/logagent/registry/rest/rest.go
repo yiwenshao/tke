@@ -10,6 +10,7 @@ import (
 	"tkestack.io/tke/api/logagent"
 	v1 "tkestack.io/tke/api/logagent/v1"
 	"tkestack.io/tke/pkg/apiserver/storage"
+	configmapstorage "tkestack.io/tke/pkg/logagent/registry/configmap/storage"
 	logagentstorage "tkestack.io/tke/pkg/logagent/registry/logagent/storage"
 )
 // StorageProvider is a REST type for core resources storage that implement
@@ -49,6 +50,8 @@ func (s *StorageProvider) v1Storage(apiResourceConfigSource serverstorage.APIRes
 		storageMap["logagents/filedownload"] = logagentRest.LogFileDownload
 		storageMap["logagents/filecontent"] = logagentRest.LogFileContent
 		storageMap["logagents/logcollector"] = logagentRest.LogagentProxy
+		configMapREST := configmapstorage.NewStorage(restOptionsGetter)
+		storageMap["configmaps"] = configMapREST.ConfigMap
 	}
 	return storageMap
 }
