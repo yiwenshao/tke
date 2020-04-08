@@ -48,6 +48,7 @@ func (s *StorageProvider) v1Storage(apiResourceConfigSource serverstorage.APIRes
 		storageMap["logagents/filetree"] = logagentRest.LogFileTree
 		storageMap["logagents/filedownload"] = logagentRest.LogFileDownload
 		storageMap["logagents/filecontent"] = logagentRest.LogFileContent
+		storageMap["logagents/logcollector"] = logagentRest.LogagentProxy
 	}
 	return storageMap
 }

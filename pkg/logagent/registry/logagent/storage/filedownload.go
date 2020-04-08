@@ -1,48 +1,102 @@
 package storage
 
 import (
+	"bytes"
 	"context"
-	"fmt"
-	"k8s.io/apimachinery/pkg/api/errors"
+	"encoding/json"
+	"io/ioutil"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	netutil "k8s.io/apimachinery/pkg/util/net"
 	"k8s.io/apiserver/pkg/registry/generic/registry"
 	"k8s.io/apiserver/pkg/registry/rest"
+	"net/http"
+	"net/http/httputil"
+	"net/url"
+	"time"
 	platformversionedclient "tkestack.io/tke/api/client/clientset/versioned/typed/platform/v1"
 	"tkestack.io/tke/api/logagent"
-	"tkestack.io/tke/pkg/apiserver/authentication"
 	"tkestack.io/tke/pkg/logagent/util"
 	"tkestack.io/tke/pkg/util/log"
 )
 // TokenREST implements the REST endpoint.
 type FileDownloadREST struct {
-	//apiKeyStore *registry.Store
 	//rest.Storage
-	apiKeyStore *registry.Store
+	store *registry.Store
 	PlatformClient platformversionedclient.PlatformV1Interface
-	//*registry.Store
+}
+
+type FileDownloadRequest struct {
+	PodName 	string `json:"podName"`
+	Namespace 	string `json:"namespace"`
+	Container 	string `json:"container"`
+	Path      	string  `json:"path"`
 }
 
 
-var _ = rest.Creater(&FileDownloadREST{})
+var _ = rest.Connecter(&FileDownloadREST{})
 
 func (r *FileDownloadREST)  New() runtime.Object {
 	return &logagent.LogFileDownload{}
 }
 
-func (r *FileDownloadREST) Create(ctx context.Context, obj runtime.Object, createValidation rest.ValidateObjectFunc, options *metav1.CreateOptions) (runtime.Object, error) {
-	log.Infof("create filenode called")
-	userName, tenantID := authentication.GetUsernameAndTenantID(ctx)
-	fileDownload := obj.(*logagent.LogFileDownload)
-	log.Infof("get userNmae %v tenantId %v and fileNode spec=%+v", userName, tenantID, fileDownload.Spec)
-	hostIp, err := util.GetClusterPodIp(fileDownload.Spec.ClusterId, fileDownload.Spec.Namespace, fileDownload.Spec.Name, r.PlatformClient)
+func (r *FileDownloadREST)  NewConnectOptions() (runtime.Object, bool, string) {
+	return &logagent.LogFileDownload{}, false, ""
+}
+
+// ConnectMethods returns the list of HTTP methods that can be proxied
+func (r *FileDownloadREST) ConnectMethods() []string {
+	return []string{"GET", "POST", "PUT", "PATCH", "DELETE"}
+}
+
+// Connect returns a handler for the kube-apiserver proxy
+func (r *FileDownloadREST) Connect(ctx context.Context, clusterName string, opts runtime.Object, responder rest.Responder) (http.Handler, error) {
+	clusterObject, err := r.store.Get(ctx, clusterName, &metav1.GetOptions{})
 	if err != nil {
-		return nil, errors.NewInternalError(fmt.Errorf("unable to get pod ip %v", err))
+		return nil, err
 	}
-	return &util.LocationStreamer{
-		Request: util.FileNodeRequest{fileDownload.Spec.Pod, fileDownload.Spec.Namespace, fileDownload.Spec.Container},
-		Transport: nil,
-		ContentType:     "text/plain",
-		Ip: hostIp,
+	logagent := clusterObject.(*logagent.LogAgent)
+	log.Infof("get log agent name=%v agent=%v", clusterName, logagent.Spec)
+	return &logCollectorProxyHandler{
+		clusterId: logagent.Spec.ClusterName,
+		platformClient: r.PlatformClient,
+		location: &url.URL{Scheme:"http",},
 	}, nil
+}
+
+type logCollectorProxyHandler struct {
+	clusterId string
+	platformClient platformversionedclient.PlatformV1Interface
+	location  *url.URL
+}
+
+func (h *logCollectorProxyHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	body, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		log.Infof("unable to ready body %v", err)
+		return
+	}
+	reqConfig := &FileDownloadRequest{}
+	if err := json.Unmarshal(body, reqConfig); err != nil {
+		log.Errorf("unable to unmarshal body %v", err)
+		return
+	}
+	req.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+	hostIp, err := util.GetClusterPodIp(h.clusterId, reqConfig.Namespace,reqConfig.PodName, h.platformClient)
+	if err != nil {
+		log.Errorf("unable to get hostip %v", err)
+		return
+	}
+	log.Infof("get host ip is %v body is %v", hostIp, req.Body)
+	loc := *h.location
+	loc.RawQuery = req.URL.RawQuery
+	loc.Path = "/v1/logfile/download"
+	loc.Host = hostIp+":8090"
+	newReq := req.WithContext(context.Background())
+	newReq.Header = netutil.CloneHeader(req.Header)
+	newReq.URL = &loc
+	reverseProxy := httputil.NewSingleHostReverseProxy(&url.URL{Scheme: loc.Scheme, Host: loc.Host})
+	reverseProxy.FlushInterval = 100 * time.Millisecond
+	reverseProxy.ErrorLog = log.StdErrLogger()
+	reverseProxy.ServeHTTP(w, newReq)
 }

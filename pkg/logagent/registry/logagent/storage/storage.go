@@ -23,6 +23,7 @@ type Storage struct {
 	LogFileTree *FileNodeREST
 	LogFileContent *FileContentREST
 	LogFileDownload *FileDownloadREST
+	LogagentProxy *LogagentProxyREST
 	Status   *StatusREST
 }
 
@@ -60,6 +61,7 @@ func NewStorage(optsGetter genericregistry.RESTOptionsGetter, privilegedUsername
 		LogFileTree:  &FileNodeREST{store, platformClient},
 		LogFileContent: &FileContentREST{store, platformClient},
 		LogFileDownload: &FileDownloadREST{store, platformClient},
+		LogagentProxy: &LogagentProxyREST{store, platformClient},
 		Status:       &StatusREST{&statusStore},
 	}
 
