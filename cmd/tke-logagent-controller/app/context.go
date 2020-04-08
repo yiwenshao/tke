@@ -3,8 +3,11 @@ package app
 import (
 	"fmt"
 	cacheddiscovery "k8s.io/client-go/discovery/cached"
+	"k8s.io/client-go/rest"
 	"net/http"
 	"time"
+	versionedclientset "tkestack.io/tke/api/client/clientset/versioned"
+	platformv1 "tkestack.io/tke/api/client/clientset/versioned/typed/platform/v1"
 	versionedinformers "tkestack.io/tke/api/client/informers/externalversions"
 	"tkestack.io/tke/cmd/tke-logagent-controller/app/config"
 	"tkestack.io/tke/pkg/controller"
@@ -42,6 +45,8 @@ type ControllerContext struct {
 	// for an individual controller to start the shared informers. Before it is closed, they should not.
 	InformersStarted chan struct{}
 
+	PlatformClient platformv1.PlatformV1Interface
+
 	// ResyncPeriod generates a duration each time it is invoked; this is so that
 	// multiple controllers don't get into lock-step and all hammer the apiserver
 	// with list requests simultaneously.
@@ -58,6 +63,11 @@ func (c ControllerContext) IsControllerEnabled(name string) bool {
 // controllers such as the cloud provider and clientBuilder. rootClientBuilder is only used for
 // the shared-informers client and token controller.
 func CreateControllerContext(cfg *config.Config, rootClientBuilder controller.ClientBuilder, stop <-chan struct{}) (ControllerContext, error) {
+	platformClient, err := versionedclientset.NewForConfig(rest.AddUserAgent(cfg.PlatformAPIServerClientConfig, "tke-logagent-controller"))
+	if err != nil {
+		return ControllerContext{}, fmt.Errorf("failed to create the platform client: %v", err)
+	}
+
 	versionedClient := rootClientBuilder.ClientOrDie("shared-informers")
 	sharedInformers := versionedinformers.NewSharedInformerFactory(versionedClient, controller.ResyncPeriod(&cfg.Component)())
 
@@ -82,6 +92,7 @@ func CreateControllerContext(cfg *config.Config, rootClientBuilder controller.Cl
 
 	ctx := ControllerContext{
 		ClientBuilder:           rootClientBuilder,
+		PlatformClient: 		 platformClient.PlatformV1(),
 		InformerFactory:         sharedInformers,
 		RESTMapper:              restMapper,
 		AvailableResources:      availableResources,

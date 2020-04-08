@@ -23,7 +23,9 @@ type Config struct {
 	ServerName           string
 	// the client only used for leader election
 	LeaderElectionClient *versionedclientset.Clientset
-	// the rest config for the notify apiserver
+	// the rest config for the platform apiserver
+	PlatformAPIServerClientConfig *restclient.Config
+	// the rest config for the logagent apiserver
 	LogagentAPIServerClientConfig *restclient.Config
 	Component                   controlleroptions.ComponentConfiguration
 }
@@ -34,6 +36,14 @@ type Config struct {
 func CreateConfigFromOptions(serverName string, opts *options.Options) (*Config, error) {
 	if err := opts.SecureServing.MaybeDefaultWithSelfSignedCerts("localhost", nil, []net.IP{net.ParseIP("127.0.0.1")}); err != nil {
 		return nil, fmt.Errorf("error creating self-signed certificates: %v", err)
+	}
+
+	platformAPIServerClientConfig, ok, err := controllerconfig.BuildClientConfig(opts.PlatformAPIClient)
+	if err != nil {
+		return nil, err
+	}
+	if !ok {
+		return nil, fmt.Errorf("failed to initialize client config of platform API server")
 	}
 
 	logagentAPIServerClientConfig, ok, err := controllerconfig.BuildClientConfig(opts.LogagentAPIClient)
@@ -52,6 +62,7 @@ func CreateConfigFromOptions(serverName string, opts *options.Options) (*Config,
 	controllerManagerConfig := &Config{
 		ServerName:                  serverName,
 		LeaderElectionClient:        leaderElectionClient,
+		PlatformAPIServerClientConfig: platformAPIServerClientConfig,
 		LogagentAPIServerClientConfig: logagentAPIServerClientConfig,
 		Authorization: apiserver.AuthorizationInfo{
 			Authorizer: authorizerfactory.NewAlwaysAllowAuthorizer(),

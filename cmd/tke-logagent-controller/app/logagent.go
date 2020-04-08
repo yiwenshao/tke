@@ -21,7 +21,7 @@ func startLogagentController(ctx ControllerContext) (http.Handler, bool, error) 
 	if !ctx.AvailableResources[schema.GroupVersionResource{Group: v1.GroupName, Version: "v1", Resource: "logagents"}] {
 		return nil, false, nil
 	}
-	ctrl := controlleragent.NewController(ctx.ClientBuilder.ClientOrDie("logagent-controller"),ctx.InformerFactory.Logagent().V1().LogAgents(),channelSyncPeriod)
+	ctrl := controlleragent.NewController(ctx.PlatformClient,ctx.ClientBuilder.ClientOrDie("logagent-controller"),ctx.InformerFactory.Logagent().V1().LogAgents(),channelSyncPeriod)
 	go ctrl.Run(concurrentChannelSyncs, ctx.Stop)
 	return nil, true, nil
 }
