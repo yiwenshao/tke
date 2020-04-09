@@ -129,7 +129,6 @@ type LogFileTree struct {
 type LogFileTreeSpec struct {
 	ClusterId string `json:"clusterId,omitempty"`
 	Namespace string `json:"namespace,omitempty"`
-	Name      string `json:"name,omitempty"`
 	Container string `json:"container,omitempty"`
 	Pod       string `json:"pod,omitempty"`
 }
@@ -140,13 +139,12 @@ type LogFileTreeSpec struct {
 // LogFileContent
 type LogFileContent struct {
 	metav1.TypeMeta `json:",inline"`
-	Spec            LogFileTreeSpec `json:"spec"`
+	Spec            LogFileContentSpec `json:"spec"`
 }
 
 type LogFileContentSpec struct {
 	ClusterId string `json:"clusterId,omitempty"`
 	Namespace string `json:"namespace,omitempty"`
-	Name      string `json:"name,omitempty"`
 	Container string `json:"container,omitempty"`
 	Pod       string `json:"pod,omitempty"`
 	Start     int32  `json:"start,omitempty"`
@@ -161,13 +159,12 @@ type LogFileContentSpec struct {
 // LogFileContent
 type LogFileDownload struct {
 	metav1.TypeMeta `json:",inline"`
-	Spec            LogFileTreeSpec `json:"spec"`
+	Spec            LogFileDownloadSpec `json:"spec"`
 }
 
 type LogFileDownloadSpec struct {
 	ClusterId string `json:"clusterId,omitempty"`
 	Namespace string `json:"namespace,omitempty"`
-	Name      string `json:"name,omitempty"`
 	Container string `json:"container,omitempty"`
 	Pod       string `json:"pod,omitempty"`
 	Start     int32  `json:"start,omitempty"`

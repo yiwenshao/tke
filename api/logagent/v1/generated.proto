@@ -122,7 +122,7 @@ message LogAgentStatus {
 
 // LogFileContent
 message LogFileContent {
-  optional LogFileTreeSpec spec = 2;
+  optional LogFileContentSpec spec = 2;
 }
 
 message LogFileContentSpec {
@@ -130,22 +130,20 @@ message LogFileContentSpec {
 
   optional string namespace = 2;
 
-  optional string name = 3;
+  optional string container = 3;
 
-  optional string container = 4;
+  optional string pod = 4;
 
-  optional string pod = 5;
+  optional int32 start = 5;
 
-  optional int32 start = 6;
+  optional int32 length = 6;
 
-  optional int32 length = 7;
-
-  optional string filepath = 8;
+  optional string filepath = 7;
 }
 
 // LogFileContent
 message LogFileDownload {
-  optional LogFileTreeSpec spec = 2;
+  optional LogFileDownloadSpec spec = 2;
 }
 
 message LogFileDownloadSpec {
@@ -153,17 +151,15 @@ message LogFileDownloadSpec {
 
   optional string namespace = 2;
 
-  optional string name = 3;
+  optional string container = 3;
 
-  optional string container = 4;
+  optional string pod = 4;
 
-  optional string pod = 5;
+  optional int32 start = 5;
 
-  optional int32 start = 6;
+  optional int32 length = 6;
 
-  optional int32 length = 7;
-
-  optional string filepath = 8;
+  optional string filepath = 7;
 }
 
 // LogFileTree
@@ -176,10 +172,8 @@ message LogFileTreeSpec {
 
   optional string namespace = 2;
 
-  optional string name = 3;
+  optional string container = 3;
 
-  optional string container = 4;
-
-  optional string pod = 5;
+  optional string pod = 4;
 }
 

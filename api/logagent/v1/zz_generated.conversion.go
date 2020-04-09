@@ -345,7 +345,7 @@ func Convert_logagent_LogAgentStatus_To_v1_LogAgentStatus(in *logagent.LogAgentS
 }
 
 func autoConvert_v1_LogFileContent_To_logagent_LogFileContent(in *LogFileContent, out *logagent.LogFileContent, s conversion.Scope) error {
-	if err := Convert_v1_LogFileTreeSpec_To_logagent_LogFileTreeSpec(&in.Spec, &out.Spec, s); err != nil {
+	if err := Convert_v1_LogFileContentSpec_To_logagent_LogFileContentSpec(&in.Spec, &out.Spec, s); err != nil {
 		return err
 	}
 	return nil
@@ -357,7 +357,7 @@ func Convert_v1_LogFileContent_To_logagent_LogFileContent(in *LogFileContent, ou
 }
 
 func autoConvert_logagent_LogFileContent_To_v1_LogFileContent(in *logagent.LogFileContent, out *LogFileContent, s conversion.Scope) error {
-	if err := Convert_logagent_LogFileTreeSpec_To_v1_LogFileTreeSpec(&in.Spec, &out.Spec, s); err != nil {
+	if err := Convert_logagent_LogFileContentSpec_To_v1_LogFileContentSpec(&in.Spec, &out.Spec, s); err != nil {
 		return err
 	}
 	return nil
@@ -371,7 +371,6 @@ func Convert_logagent_LogFileContent_To_v1_LogFileContent(in *logagent.LogFileCo
 func autoConvert_v1_LogFileContentSpec_To_logagent_LogFileContentSpec(in *LogFileContentSpec, out *logagent.LogFileContentSpec, s conversion.Scope) error {
 	out.ClusterId = in.ClusterId
 	out.Namespace = in.Namespace
-	out.Name = in.Name
 	out.Container = in.Container
 	out.Pod = in.Pod
 	out.Start = in.Start
@@ -388,7 +387,6 @@ func Convert_v1_LogFileContentSpec_To_logagent_LogFileContentSpec(in *LogFileCon
 func autoConvert_logagent_LogFileContentSpec_To_v1_LogFileContentSpec(in *logagent.LogFileContentSpec, out *LogFileContentSpec, s conversion.Scope) error {
 	out.ClusterId = in.ClusterId
 	out.Namespace = in.Namespace
-	out.Name = in.Name
 	out.Container = in.Container
 	out.Pod = in.Pod
 	out.Start = in.Start
@@ -403,7 +401,7 @@ func Convert_logagent_LogFileContentSpec_To_v1_LogFileContentSpec(in *logagent.L
 }
 
 func autoConvert_v1_LogFileDownload_To_logagent_LogFileDownload(in *LogFileDownload, out *logagent.LogFileDownload, s conversion.Scope) error {
-	if err := Convert_v1_LogFileTreeSpec_To_logagent_LogFileTreeSpec(&in.Spec, &out.Spec, s); err != nil {
+	if err := Convert_v1_LogFileDownloadSpec_To_logagent_LogFileDownloadSpec(&in.Spec, &out.Spec, s); err != nil {
 		return err
 	}
 	return nil
@@ -415,7 +413,7 @@ func Convert_v1_LogFileDownload_To_logagent_LogFileDownload(in *LogFileDownload,
 }
 
 func autoConvert_logagent_LogFileDownload_To_v1_LogFileDownload(in *logagent.LogFileDownload, out *LogFileDownload, s conversion.Scope) error {
-	if err := Convert_logagent_LogFileTreeSpec_To_v1_LogFileTreeSpec(&in.Spec, &out.Spec, s); err != nil {
+	if err := Convert_logagent_LogFileDownloadSpec_To_v1_LogFileDownloadSpec(&in.Spec, &out.Spec, s); err != nil {
 		return err
 	}
 	return nil
@@ -429,7 +427,6 @@ func Convert_logagent_LogFileDownload_To_v1_LogFileDownload(in *logagent.LogFile
 func autoConvert_v1_LogFileDownloadSpec_To_logagent_LogFileDownloadSpec(in *LogFileDownloadSpec, out *logagent.LogFileDownloadSpec, s conversion.Scope) error {
 	out.ClusterId = in.ClusterId
 	out.Namespace = in.Namespace
-	out.Name = in.Name
 	out.Container = in.Container
 	out.Pod = in.Pod
 	out.Start = in.Start
@@ -446,7 +443,6 @@ func Convert_v1_LogFileDownloadSpec_To_logagent_LogFileDownloadSpec(in *LogFileD
 func autoConvert_logagent_LogFileDownloadSpec_To_v1_LogFileDownloadSpec(in *logagent.LogFileDownloadSpec, out *LogFileDownloadSpec, s conversion.Scope) error {
 	out.ClusterId = in.ClusterId
 	out.Namespace = in.Namespace
-	out.Name = in.Name
 	out.Container = in.Container
 	out.Pod = in.Pod
 	out.Start = in.Start
@@ -487,7 +483,6 @@ func Convert_logagent_LogFileTree_To_v1_LogFileTree(in *logagent.LogFileTree, ou
 func autoConvert_v1_LogFileTreeSpec_To_logagent_LogFileTreeSpec(in *LogFileTreeSpec, out *logagent.LogFileTreeSpec, s conversion.Scope) error {
 	out.ClusterId = in.ClusterId
 	out.Namespace = in.Namespace
-	out.Name = in.Name
 	out.Container = in.Container
 	out.Pod = in.Pod
 	return nil
@@ -501,7 +496,6 @@ func Convert_v1_LogFileTreeSpec_To_logagent_LogFileTreeSpec(in *LogFileTreeSpec,
 func autoConvert_logagent_LogFileTreeSpec_To_v1_LogFileTreeSpec(in *logagent.LogFileTreeSpec, out *LogFileTreeSpec, s conversion.Scope) error {
 	out.ClusterId = in.ClusterId
 	out.Namespace = in.Namespace
-	out.Name = in.Name
 	out.Container = in.Container
 	out.Pod = in.Pod
 	return nil

@@ -1,13 +1,17 @@
 package storage
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
+	"io"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apiserver/pkg/registry/generic/registry"
 	"k8s.io/apiserver/pkg/registry/rest"
+	"net/http"
 	platformversionedclient "tkestack.io/tke/api/client/clientset/versioned/typed/platform/v1"
 	"tkestack.io/tke/api/logagent"
 	"tkestack.io/tke/pkg/apiserver/authentication"
@@ -55,6 +59,42 @@ func (r *FileNodeREST)  New() runtime.Object {
 //	panic("String does not implement DeepCopyObject")
 //}
 
+type FileNodeRequest struct {
+	PodName string `json:"podName"`
+	Namespace string `json:"namespace"`
+	Container string `json:"container"`
+}
+
+type FileNodeProxy struct {
+	Req logagent.LogFileTreeSpec
+	Ip string
+	Port string
+}
+
+func (p *FileNodeProxy) GetReaderCloser() io.ReadCloser {
+	jsonStr, err := json.Marshal(p.Req)
+	if err != nil {
+		log.Errorf("unable to marshal request to json %v", err)
+		return nil
+	}
+	url := "http://" + p.Ip + ":" + p.Port + "/v1/logfile/directory"
+	log.Infof("url is %v", url)
+	httpReq, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
+	httpReq.Header.Set("Content-Type", "application/json")
+	if err != nil {
+		log.Errorf("unable to generate request %v", err)
+		return nil
+	}
+
+	client := &http.Client{}
+	resp, err := client.Do(httpReq)
+	if err != nil {
+		log.Errorf("unable to connect to log-agent %v", err)
+		return nil
+	}
+	return resp.Body
+}
+
 func (r *FileNodeREST) Create(ctx context.Context, obj runtime.Object, createValidation rest.ValidateObjectFunc, options *metav1.CreateOptions) (runtime.Object, error) {
 	//how to get the parent resource??
 	log.Infof("create filenode called")
@@ -89,9 +129,10 @@ func (r *FileNodeREST) Create(ctx context.Context, obj runtime.Object, createVal
 	//}, nil
 
 	return &util.LocationStreamer{
-		Request: util.FileNodeRequest{fileNode.Spec.Pod, fileNode.Spec.Namespace, fileNode.Spec.Container},
+		//Request: FileNodeRequest{fileNode.Spec.Pod, fileNode.Spec.Namespace, fileNode.Spec.Container},
+		Request: &FileNodeProxy{Req:fileNode.Spec ,Ip:hostip,Port:util.LogagentPort},
 		Transport: nil,
-		ContentType:     "text/plain",
+		ContentType:     "application/json",
 		Ip: hostip,
 	}, nil
 

@@ -117,9 +117,8 @@ type LogFileTree struct {
 type LogFileTreeSpec struct {
 	ClusterId string `json:"clusterId,omitempty" protobuf:"bytes,1,opt,name=clusterId"`
 	Namespace string `json:"namespace,omitempty" protobuf:"bytes,2,opt,name=namespace"`
-	Name      string `json:"name,omitempty" protobuf:"bytes,3,opt,name=name"`
-	Container string `json:"container,omitempty" protobuf:"bytes,4,opt,name=container"`
-	Pod       string `json:"pod,omitempty" protobuf:"bytes,5,opt,name=pod"`
+	Container string `json:"container,omitempty" protobuf:"bytes,3,opt,name=container"`
+	Pod       string `json:"pod,omitempty" protobuf:"bytes,4,opt,name=pod"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
@@ -127,18 +126,17 @@ type LogFileTreeSpec struct {
 // LogFileContent
 type LogFileContent struct {
 	metav1.TypeMeta `json:",inline"`
-	Spec            LogFileTreeSpec `json:"spec" protobuf:"bytes,2,opt,name=spec"`
+	Spec            LogFileContentSpec `json:"spec" protobuf:"bytes,2,opt,name=spec"`
 }
 
 type LogFileContentSpec struct {
 	ClusterId string `json:"clusterId,omitempty" protobuf:"bytes,1,opt,name=clusterId"`
 	Namespace string `json:"namespace,omitempty" protobuf:"bytes,2,opt,name=namespace"`
-	Name      string `json:"name,omitempty" protobuf:"bytes,3,opt,name=name"`
-	Container string `json:"container,omitempty" protobuf:"bytes,4,opt,name=container"`
-	Pod       string `json:"pod,omitempty" protobuf:"bytes,5,opt,name=pod"`
-	Start     int32  `json:"start,omitempty" protobuf:"varint,6,opt,name=start"`
-	Length    int32  `json:"length,omitempty" protobuf:"varint,7,opt,name=length"`
-	Filepath  string `json:"filepath,omitempty" protobuf:"bytes,8,opt,name=filepath"`
+	Container string `json:"container,omitempty" protobuf:"bytes,3,opt,name=container"`
+	Pod       string `json:"pod,omitempty" protobuf:"bytes,4,opt,name=pod"`
+	Start     int32  `json:"start,omitempty" protobuf:"varint,5,opt,name=start"`
+	Length    int32  `json:"length,omitempty" protobuf:"varint,6,opt,name=length"`
+	Filepath  string `json:"filepath,omitempty" protobuf:"bytes,7,opt,name=filepath"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
@@ -146,18 +144,17 @@ type LogFileContentSpec struct {
 // LogFileContent
 type LogFileDownload struct {
 	metav1.TypeMeta `json:",inline"`
-	Spec            LogFileTreeSpec `json:"spec" protobuf:"bytes,2,opt,name=spec"`
+	Spec            LogFileDownloadSpec `json:"spec" protobuf:"bytes,2,opt,name=spec"`
 }
 
 type LogFileDownloadSpec struct {
 	ClusterId string `json:"clusterId,omitempty" protobuf:"bytes,1,opt,name=clusterId"`
 	Namespace string `json:"namespace,omitempty" protobuf:"bytes,2,opt,name=namespace"`
-	Name      string `json:"name,omitempty" protobuf:"bytes,3,opt,name=name"`
-	Container string `json:"container,omitempty" protobuf:"bytes,4,opt,name=container"`
-	Pod       string `json:"pod,omitempty" protobuf:"bytes,5,opt,name=pod"`
-	Start     int32  `json:"start,omitempty" protobuf:"varint,6,opt,name=start"`
-	Length    int32  `json:"length,omitempty" protobuf:"varint,7,opt,name=length"`
-	Filepath  string `json:"filepath,omitempty" protobuf:"bytes,8,opt,name=filepath"`
+	Container string `json:"container,omitempty" protobuf:"bytes,3,opt,name=container"`
+	Pod       string `json:"pod,omitempty" protobuf:"bytes,4,opt,name=pod"`
+	Start     int32  `json:"start,omitempty" protobuf:"varint,5,opt,name=start"`
+	Length    int32  `json:"length,omitempty" protobuf:"varint,6,opt,name=length"`
+	Filepath  string `json:"filepath,omitempty" protobuf:"bytes,7,opt,name=filepath"`
 }
 
 // +genclient
