@@ -25,3 +25,9 @@ import (
 func addDefaultingFuncs(scheme *runtime.Scheme) error {
 	return RegisterDefaults(scheme)
 }
+
+func SetDefaults_LogAgentStatus(obj *LogAgentStatus) {
+	if obj.Phase == "" {
+		obj.Phase = AddonPhaseInitializing
+	}
+}

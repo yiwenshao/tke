@@ -30,5 +30,18 @@ import (
 // Public to allow building arbitrary schemes.
 // All generated defaulters are covering - they call all nested defaulters.
 func RegisterDefaults(scheme *runtime.Scheme) error {
+	scheme.AddTypeDefaultingFunc(&LogAgent{}, func(obj interface{}) { SetObjectDefaults_LogAgent(obj.(*LogAgent)) })
+	scheme.AddTypeDefaultingFunc(&LogAgentList{}, func(obj interface{}) { SetObjectDefaults_LogAgentList(obj.(*LogAgentList)) })
 	return nil
+}
+
+func SetObjectDefaults_LogAgent(in *LogAgent) {
+	SetDefaults_LogAgentStatus(&in.Status)
+}
+
+func SetObjectDefaults_LogAgentList(in *LogAgentList) {
+	for i := range in.Items {
+		a := &in.Items[i]
+		SetObjectDefaults_LogAgent(a)
+	}
 }
