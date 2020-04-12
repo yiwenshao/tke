@@ -11,6 +11,7 @@ import (
 	"tkestack.io/tke/cmd/tke-logagent-controller/app/options"
 	controllerconfig "tkestack.io/tke/pkg/controller/config"
 	controlleroptions "tkestack.io/tke/pkg/controller/options"
+	"tkestack.io/tke/pkg/logagent/util"
 )
 
 // Config is the running configuration structure of the TKE controller manager.
@@ -28,6 +29,7 @@ type Config struct {
 	// the rest config for the logagent apiserver
 	LogagentAPIServerClientConfig *restclient.Config
 	Component                   controlleroptions.ComponentConfiguration
+
 }
 
 
@@ -81,5 +83,6 @@ func CreateConfigFromOptions(serverName string, opts *options.Options) (*Config,
 	if err := opts.Debug.ApplyTo(&controllerManagerConfig.Component.Debugging); err != nil {
 		return nil, err
 	}
+	util.Init(opts.FeatureOptions.Domain, opts.FeatureOptions.Namespace)
 	return controllerManagerConfig, nil
 }

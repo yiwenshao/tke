@@ -15,6 +15,7 @@ type Options struct {
 	Component         *controlleroptions.ComponentOptions
 	LogagentAPIClient  *controlleroptions.APIServerClientOptions
 	PlatformAPIClient *controlleroptions.APIServerClientOptions
+	FeatureOptions *FeatureOptions
 	// The Registry will load its initial configuration from this file.
 	// The path may be absolute or relative; relative paths are under the Monitor's current working directory.
 	LogagentConfig string
@@ -29,6 +30,7 @@ func NewOptions(serverName string, allControllers []string, disabledByDefaultCon
 		Component:       controlleroptions.NewComponentOptions(allControllers, disabledByDefaultControllers),
 		LogagentAPIClient: controlleroptions.NewAPIServerClientOptions("logagent", true),
 		PlatformAPIClient: controlleroptions.NewAPIServerClientOptions("platform", true),
+		FeatureOptions: NewFeatureOptions(),
 	}
 }
 
@@ -40,6 +42,7 @@ func (o *Options) AddFlags(fs *pflag.FlagSet) {
 	o.Component.AddFlags(fs)
 	o.LogagentAPIClient.AddFlags(fs)
 	o.PlatformAPIClient.AddFlags(fs)
+	o.FeatureOptions.AddFlags(fs)
 }
 
 // ApplyFlags parsing parameters from the command line or configuration file
@@ -53,6 +56,7 @@ func (o *Options) ApplyFlags() []error {
 	errs = append(errs, o.Component.ApplyFlags()...)
 	errs = append(errs, o.LogagentAPIClient.ApplyFlags()...)
 	errs = append(errs, o.PlatformAPIClient.ApplyFlags()...)
+	errs = append(errs, o.FeatureOptions.ApplyFlags()...)
 
 	return errs
 }

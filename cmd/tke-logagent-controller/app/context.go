@@ -52,6 +52,7 @@ type ControllerContext struct {
 	// with list requests simultaneously.
 	ResyncPeriod            func() time.Duration
 	ControllerStartInterval time.Duration
+
 }
 
 // IsControllerEnabled returns whether the controller has been enabled

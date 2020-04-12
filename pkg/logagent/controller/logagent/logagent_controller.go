@@ -16,6 +16,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/util/workqueue"
+	"path"
 	"reflect"
 	"sync"
 	"time"
@@ -586,13 +587,15 @@ func (c *Controller) genDaemonSet(version string) *appsv1.DaemonSet {
 					Containers: []corev1.Container{
 						{
 							Name:  daemonSetName,
-							Image: images.Get(version).LogCollector.FullName(),
+							Image: path.Join(util.GetRegistryDomain(), util.GetRegistryNamespace(), images.Get(version).LogCollector.BaseName()),
 							SecurityContext: &corev1.SecurityContext{
 								Privileged: boolPtr(true),
 								Capabilities: &corev1.Capabilities{
 									Add: []corev1.Capability{"SYS_ADMIN"},
 								},
 							},
+							Command: []string{"/bin/bash", "-c"},
+							Args: []string{"/usr/output/bin/log-collector --fluentd-log-level=info --log-level=info & /usr/output/bin/log-agent -alsologtostderr"},
 							Resources: corev1.ResourceRequirements{
 								// TODO: add support for configuring them
 								Limits: corev1.ResourceList{
