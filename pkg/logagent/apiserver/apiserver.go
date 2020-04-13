@@ -21,7 +21,6 @@ type ExtraConfig struct {
 	VersionedInformers      versionedinformers.SharedInformerFactory
 	PlatformClient          platformversionedclient.PlatformV1Interface
 	PrivilegedUsername      string
-	//MonitorConfig           *monitorconfig.MonitorConfiguration
 }
 
 

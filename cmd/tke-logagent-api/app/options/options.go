@@ -36,7 +36,6 @@ func NewOptions(serverName string) *Options {
 		Authorization:  apiserveroptions.NewAuthorizationOptions(),
 		ETCD:           storageoptions.NewETCDStorageOptions("/tke/logagent-api"),
 		PlatformAPIClient: controlleroptions.NewAPIServerClientOptions("platform", true),
-		//Auth:           NewAuthOptions(), //options/logagent.go is not used currently
 	}
 }
 

@@ -8,7 +8,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/errors"
 )
 
-// FilterLogCollector is used to filter log collector that do not belong
+// FilterLogAgent is used to filter log collector that do not belong
 // to the tenant.
 func FilterLogAgent(ctx context.Context, decorator *logagent.LogAgent) error {
 	_, tenantID := authentication.GetUsernameAndTenantID(ctx)

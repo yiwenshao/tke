@@ -27,7 +27,7 @@ type FileDownloadREST struct {
 }
 
 type FileDownloadRequest struct {
-	PodName 	string `json:"podName"`
+	PodName 	string `json:"pod"`
 	Namespace 	string `json:"namespace"`
 	Container 	string `json:"container"`
 	Path      	string  `json:"path"`
