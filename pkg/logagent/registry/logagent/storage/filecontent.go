@@ -33,18 +33,17 @@ func (r *FileContentREST)  New() runtime.Object {
 	return &logagent.LogFileContent{}
 }
 
-
 type FileContentProxy struct {
 	Req logagent.LogFileContentSpec
 	Ip string
 	Port string
 }
 
-func (p *FileContentProxy) GetReaderCloser() io.ReadCloser {
+func (p *FileContentProxy) GetReaderCloser() (io.ReadCloser,error) {
 	jsonStr, err := json.Marshal(p.Req)
 	if err != nil {
 		log.Errorf("unable to marshal request to json %v", err)
-		return nil
+		return nil, fmt.Errorf("unable to marshal request")
 	}
 	url := "http://" + p.Ip + ":" + p.Port + "/v1/logfile/content"
 	log.Infof("url is %v", url)
@@ -52,22 +51,20 @@ func (p *FileContentProxy) GetReaderCloser() io.ReadCloser {
 	httpReq.Header.Set("Content-Type", "application/json")
 	if err != nil {
 		log.Errorf("unable to generate request %v", err)
-		return nil
+		return nil, fmt.Errorf("unable to generate request")
 	}
-
 	client := &http.Client{}
 	resp, err := client.Do(httpReq)
 	if err != nil {
 		log.Errorf("unable to connect to log-agent %v", err)
-		return nil
+		return nil, fmt.Errorf("unable to connect log-agent")
 	}
-	return resp.Body
+	return resp.Body, nil
 }
 
 
 func (r *FileContentREST) Create(ctx context.Context, obj runtime.Object, createValidation rest.ValidateObjectFunc, options *metav1.CreateOptions) (runtime.Object, error) {
 	//how to get the parent resource??
-	log.Infof("create filenode called")
 	userName, tenantID := authentication.GetUsernameAndTenantID(ctx)
 	fileContent := obj.(*logagent.LogFileContent)
 	log.Infof("get userNmae %v tenantId %v and fileNode spec=%+v", userName, tenantID, fileContent.Spec)

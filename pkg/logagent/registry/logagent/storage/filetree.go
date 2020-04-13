@@ -71,11 +71,11 @@ type FileNodeProxy struct {
 	Port string
 }
 
-func (p *FileNodeProxy) GetReaderCloser() io.ReadCloser {
+func (p *FileNodeProxy) GetReaderCloser() (io.ReadCloser,error) {
 	jsonStr, err := json.Marshal(p.Req)
 	if err != nil {
 		log.Errorf("unable to marshal request to json %v", err)
-		return nil
+		return nil, fmt.Errorf("unable to marshal request")
 	}
 	url := "http://" + p.Ip + ":" + p.Port + "/v1/logfile/directory"
 	log.Infof("url is %v", url)
@@ -83,57 +83,32 @@ func (p *FileNodeProxy) GetReaderCloser() io.ReadCloser {
 	httpReq.Header.Set("Content-Type", "application/json")
 	if err != nil {
 		log.Errorf("unable to generate request %v", err)
-		return nil
+		return nil, fmt.Errorf("unable to generate request")
 	}
 
 	client := &http.Client{}
 	resp, err := client.Do(httpReq)
 	if err != nil {
-		log.Errorf("unable to connect to log-agent %v", err)
-		return nil
+		log.Errorf("unable to connect log-agent %v", err)
+		return nil, fmt.Errorf("unable to connect log-agent")
 	}
-	return resp.Body
+	return resp.Body, nil
 }
 
 func (r *FileNodeREST) Create(ctx context.Context, obj runtime.Object, createValidation rest.ValidateObjectFunc, options *metav1.CreateOptions) (runtime.Object, error) {
 	//how to get the parent resource??
-	log.Infof("create filenode called")
 	userName, tenantID := authentication.GetUsernameAndTenantID(ctx)
 	fileNode := obj.(*logagent.LogFileTree)
 	log.Infof("get userNmae %v tenantId %v and fileNode spec=%+v", userName, tenantID, fileNode.Spec)
-
-	client, err := util.GetClusterClient(fileNode.Spec.ClusterId,r.PlatformClient)
-	if err != nil {
-		log.Infof("unable to connect to user cluster %v", err)
-		return nil, errors.NewInternalError(fmt.Errorf("test to not implemented log filenode"))
+	hostIp, err := util.GetClusterPodIp(fileNode.Spec.ClusterId, fileNode.Spec.Namespace, fileNode.Spec.Pod, r.PlatformClient)
+	if  err != nil {
+		return nil, errors.NewInternalError(fmt.Errorf("unable to get host ip"))
 	}
-	_, err = client.CoreV1().Nodes().List(metav1.ListOptions{})
-	if err != nil {
-		log.Infof("unable to get cluster nodes")
-	}
-	//log.Infof("my nodes are %+v", nodes)
-
-	pod, err := client.CoreV1().Pods(fileNode.Spec.Namespace).Get(fileNode.Spec.Pod,metav1.GetOptions{})
-	if err != nil {
-		log.Errorf("unable to get pod %v", err)
-		return nil, errors.NewInternalError(fmt.Errorf("test to not implemented log filenode"))
-	}
-	hostip := pod.Status.HostIP
-	//res := util.GetPodFileTree( util.FileNodeRequest{fileNode.Spec.Pod, fileNode.Spec.Namespace, fileNode.Spec.Container}, hostip)
-	//
-	//log.Infof("get file node results %v", res)
-
-	//return nil, nil
-	//return &logagent.LogFileTree{
-	//	Spec: logagent.LogFileTreeSpec{Container:string(res)},
-	//}, nil
-
 	return &util.LocationStreamer{
 		//Request: FileNodeRequest{fileNode.Spec.Pod, fileNode.Spec.Namespace, fileNode.Spec.Container},
-		Request: &FileNodeProxy{Req:fileNode.Spec ,Ip:hostip,Port:util.LogagentPort},
+		Request: &FileNodeProxy{Req:fileNode.Spec ,Ip:hostIp,Port:util.LogagentPort},
 		Transport: nil,
 		ContentType:     "application/json",
-		Ip: hostip,
+		Ip: hostIp,
 	}, nil
-
 }

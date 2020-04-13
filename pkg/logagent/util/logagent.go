@@ -9,5 +9,5 @@ const(
 )
 
 type ReaderCloserGetter interface {
-	GetReaderCloser() io.ReadCloser
+	GetReaderCloser() (io.ReadCloser,error)
 }

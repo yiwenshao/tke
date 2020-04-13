@@ -73,17 +73,20 @@ type logCollectorProxyHandler struct {
 func (h *logCollectorProxyHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
+		util.WriteResponseError(w, util.ErrorInvalidParameter, "unable to read request body")
 		log.Infof("unable to ready body %v", err)
 		return
 	}
 	reqConfig := &FileDownloadRequest{}
 	if err := json.Unmarshal(body, reqConfig); err != nil {
+		util.WriteResponseError(w, util.ErrorInvalidParameter, "unable to ummarshal request")
 		log.Errorf("unable to unmarshal body %v", err)
 		return
 	}
 	req.Body = ioutil.NopCloser(bytes.NewBuffer(body))
 	hostIp, err := util.GetClusterPodIp(h.clusterId, reqConfig.Namespace,reqConfig.PodName, h.platformClient)
 	if err != nil {
+		util.WriteResponseError(w, util.ErrorInternalError, "unable to find host for this request")
 		log.Errorf("unable to get hostip %v", err)
 		return
 	}
