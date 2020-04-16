@@ -32,7 +32,6 @@ import (
 	"net/http"
 	platformversionedclient "tkestack.io/tke/api/client/clientset/versioned/typed/platform/v1"
 	"tkestack.io/tke/api/logagent"
-	"tkestack.io/tke/pkg/apiserver/authentication"
 	"tkestack.io/tke/pkg/logagent/util"
 	"tkestack.io/tke/pkg/util/log"
 )
