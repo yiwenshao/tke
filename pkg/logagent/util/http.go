@@ -36,7 +36,6 @@ type ResponseError struct {
 	Message string `json:"Message,omitempty"`
 }
 
-
 func WriteResponseError(rw http.ResponseWriter, code ErrorCode, message string) {
 	e := ResponseError{
 		Code: code,

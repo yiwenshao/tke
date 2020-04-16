@@ -46,12 +46,11 @@ type FileNodeREST struct {
 	//*registry.Store
 }
 
-var _ = rest.Creater(&FileNodeREST{})//implement the Creater interface, then how to obtail client to user cluster?
+var _ = rest.Creater(&FileNodeREST{})
 
 // New returns an empty object that can be used with Create after request data
 // has been put into it.
 func (r *FileNodeREST)  New() runtime.Object {
-	log.Infof("new filenode called")
 	return &logagent.LogFileTree{}
 }
 
@@ -74,14 +73,12 @@ func (p *FileNodeProxy) GetReaderCloser() (io.ReadCloser,error) {
 		return nil, fmt.Errorf("unable to marshal request")
 	}
 	url := "http://" + p.Ip + ":" + p.Port + "/v1/logfile/directory"
-	log.Infof("url is %v", url)
 	httpReq, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
 	httpReq.Header.Set("Content-Type", "application/json")
 	if err != nil {
 		log.Errorf("unable to generate request %v", err)
 		return nil, fmt.Errorf("unable to generate request")
 	}
-
 	client := &http.Client{}
 	resp, err := client.Do(httpReq)
 	if err != nil {
@@ -93,15 +90,14 @@ func (p *FileNodeProxy) GetReaderCloser() (io.ReadCloser,error) {
 
 func (r *FileNodeREST) Create(ctx context.Context, obj runtime.Object, createValidation rest.ValidateObjectFunc, options *metav1.CreateOptions) (runtime.Object, error) {
 	//TODO: get cluster id from parent resource
-	userName, tenantID := authentication.GetUsernameAndTenantID(ctx)
+	//userName, tenantID := authentication.GetUsernameAndTenantID(ctx)
 	fileNode := obj.(*logagent.LogFileTree)
-	log.Infof("get userNmae %v tenantId %v and fileNode spec=%+v", userName, tenantID, fileNode.Spec)
+	//log.Infof("get userNmae %v tenantId %v and fileNode spec=%+v", userName, tenantID, fileNode.Spec)
 	hostIp, err := util.GetClusterPodIp(fileNode.Spec.ClusterId, fileNode.Spec.Namespace, fileNode.Spec.Pod, r.PlatformClient)
 	if  err != nil {
 		return nil, errors.NewInternalError(fmt.Errorf("unable to get host ip"))
 	}
 	return &util.LocationStreamer{
-		//Request: FileNodeRequest{fileNode.Spec.Pod, fileNode.Spec.Namespace, fileNode.Spec.Container},
 		Request: &FileNodeProxy{Req:fileNode.Spec ,Ip:hostIp,Port:util.LogagentPort},
 		Transport: nil,
 		ContentType:     "application/json",

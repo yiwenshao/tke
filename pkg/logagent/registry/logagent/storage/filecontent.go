@@ -82,10 +82,10 @@ func (p *FileContentProxy) GetReaderCloser() (io.ReadCloser,error) {
 
 
 func (r *FileContentREST) Create(ctx context.Context, obj runtime.Object, createValidation rest.ValidateObjectFunc, options *metav1.CreateOptions) (runtime.Object, error) {
-	//how to get the parent resource??
-	userName, tenantID := authentication.GetUsernameAndTenantID(ctx)
+	//TODO: get cluster id from parent resource
+	//userName, tenantID := authentication.GetUsernameAndTenantID(ctx)
 	fileContent := obj.(*logagent.LogFileContent)
-	log.Infof("get userNmae %v tenantId %v and fileNode spec=%+v", userName, tenantID, fileContent.Spec)
+	//log.Infof("get userNmae %v tenantId %v and fileNode spec=%+v", userName, tenantID, fileContent.Spec)
 	hostIp, err := util.GetClusterPodIp(fileContent.Spec.ClusterId, fileContent.Spec.Namespace, fileContent.Spec.Pod, r.PlatformClient)
 	if err != nil {
 		return nil, errors.NewInternalError(fmt.Errorf("unable to get pod ip %v", err))

@@ -130,35 +130,30 @@ func (r *REST) ShortNames() []string {
 
 //No need to implement TODO: remove this function
 func (r *REST) Create(ctx context.Context, obj runtime.Object, createValidation rest.ValidateObjectFunc, options *metav1.CreateOptions) (runtime.Object, error){
-	la := obj.(*logagent.LogAgent)
-	log.Infof("create logagents name=%v",la.Name)
+	//la := obj.(*logagent.LogAgent)
 	return r.Store.Create(ctx, obj, createValidation, options)
 }
 
 
 // List selects resources in the storage which match to the selector. 'options' can be nil.
 func (r *REST) List(ctx context.Context, options *metainternal.ListOptions) (runtime.Object, error) {
-	log.Infof("list logagents ")
 	wrappedOptions := apiserverutil.PredicateListOptions(ctx, options)
 	return r.Store.List(ctx, wrappedOptions)
 }
 
 // Get finds a resource in the storage by name and returns it.
 func (r *REST) Get(ctx context.Context, name string, options *metav1.GetOptions) (runtime.Object, error) {
-	log.Infof("get logagents with name %v", name)
 	return ValidateGetObjectAndTenantID(ctx, r.Store, name, options)
 }
 
 // Export an object.  Fields that are not user specified are stripped out
 // Returns the stripped object.
 func (r *REST) Export(ctx context.Context, name string, options metav1.ExportOptions) (runtime.Object, error) {
-	log.Infof("export logagents with name %v", name)
 	return ValidateExportObjectAndTenantID(ctx, r.Store, name, options)
 }
 
 // Update finds a resource in the storage and updates it.
 func (r *REST) Update(ctx context.Context, name string, objInfo rest.UpdatedObjectInfo, createValidation rest.ValidateObjectFunc, updateValidation rest.ValidateObjectUpdateFunc, forceAllowCreate bool, options *metav1.UpdateOptions) (runtime.Object, bool, error) {
-	log.Infof("update logagents with name %v", name)
 	// We are explicitly setting forceAllowCreate to false in the call to the underlying storage because
 	// sub resources should never allow create on update.
 	_, err := ValidateGetObjectAndTenantID(ctx, r.Store, name, &metav1.GetOptions{})
@@ -170,7 +165,6 @@ func (r *REST) Update(ctx context.Context, name string, objInfo rest.UpdatedObje
 
 // Delete enforces life-cycle rules for cluster termination
 func (r *REST) Delete(ctx context.Context, name string, deleteValidation rest.ValidateObjectFunc, options *metav1.DeleteOptions) (runtime.Object, bool, error) {
-	log.Infof("delete logagents with name %v", name)
 	_, err := ValidateGetObjectAndTenantID(ctx, r.Store, name, &metav1.GetOptions{})
 	if err != nil {
 		return nil, false, err
@@ -205,20 +199,17 @@ func (r *StatusREST) New() runtime.Object {
 
 // Get retrieves the object from the storage. It is required to support Patch.
 func (r *StatusREST) Get(ctx context.Context, name string, options *metav1.GetOptions) (runtime.Object, error) {
-	log.Infof("get logagents status name=%v", name)
 	return ValidateGetObjectAndTenantID(ctx, r.store, name, options)
 }
 
 // Export an object.  Fields that are not user specified are stripped out
 // Returns the stripped object.
 func (r *StatusREST) Export(ctx context.Context, name string, options metav1.ExportOptions) (runtime.Object, error) {
-	log.Infof("export logagents status name=%v", name)
 	return ValidateExportObjectAndTenantID(ctx, r.store, name, options)
 }
 
 // Update alters the status subset of an object.
 func (r *StatusREST) Update(ctx context.Context, name string, objInfo rest.UpdatedObjectInfo, createValidation rest.ValidateObjectFunc, updateValidation rest.ValidateObjectUpdateFunc, forceAllowCreate bool, options *metav1.UpdateOptions) (runtime.Object, bool, error) {
-	log.Infof("update logagents status name=%v", name)
 	// We are explicitly setting forceAllowCreate to false in the call to the underlying storage because
 	// sub resources should never allow create on update.
 	_, err := ValidateGetObjectAndTenantID(ctx, r.store, name, &metav1.GetOptions{})

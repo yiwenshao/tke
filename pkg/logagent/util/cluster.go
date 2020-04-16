@@ -102,7 +102,6 @@ func APIServerLocationByCluster(ctx context.Context, clusterName string,platform
 	if credential.Token != nil {
 		token = *credential.Token
 	}
-	log.Infof("able to return transport of cluster")
 	return &url.URL{
 		Scheme: "https",
 		Host:   host,

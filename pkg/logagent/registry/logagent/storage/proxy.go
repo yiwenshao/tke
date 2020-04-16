@@ -67,7 +67,6 @@ func (r *LogagentProxyREST) Connect(ctx context.Context, clusterName string, opt
 	agentConfig := clusterObject.(*logagent.LogAgent)
 
 	proxyOpts := opts.(*logagent.LogAgentProxyOptions)
-	log.Infof("get option %v", proxyOpts)
 
 	location, transport, token, err := util.APIServerLocationByCluster(ctx, agentConfig.Spec.ClusterName, r.platformClient)
 	if err != nil {

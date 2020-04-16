@@ -173,16 +173,13 @@ func (c *Controller) worker() {
 }
 
 func (c *Controller) processNextWorkItem() bool {
-	log.Infof("queue length 1 is %v", c.queue.Len())
 	key, quit := c.queue.Get()
-	log.Infof("queue length 2 is %v", c.queue.Len())
 	if quit {
 		return false
 	}
 	defer c.queue.Done(key)
 
 	err := c.syncLogCollector(key.(string))
-	log.Infof("get key with name %v queue size is %v", key, c.queue.Len())
 	if err == nil {
 		c.queue.Forget(key)
 		return true
@@ -335,11 +332,9 @@ func (c *Controller) createLogCollectorIfNeeded(
 	cachedLogCollector *cachedLogCollector,
 	LogCollector *v1.LogAgent) error {
 
-	log.Infof("current logcollector phase is %s", &LogCollector.Status.Phase)
 	switch LogCollector.Status.Phase {
 	case v1.AddonPhaseInitializing:
-		log.Infof("hit AddonPhaseInitializing")
-		log.Error("LogCollector will be created", log.String("name", key))
+		log.Infof("LogCollector will be created", log.String("name", key))
 		err := c.installLogCollector(LogCollector)
 		if err == nil {
 			LogCollector = LogCollector.DeepCopy()
@@ -358,7 +353,6 @@ func (c *Controller) createLogCollectorIfNeeded(
 		LogCollector.Status.LastReInitializingTimestamp = metav1.Now()
 		return c.persistUpdate(LogCollector)
 	case v1.AddonPhaseReinitializing:
-		log.Infof("hit AddonPhaseReinitializing")
 		var interval = time.Since(LogCollector.Status.LastReInitializingTimestamp.Time)
 		var waitTime time.Duration
 		if interval >= timeOut {
@@ -613,7 +607,7 @@ func (c *Controller) genDaemonSet(version string) *appsv1.DaemonSet {
 								},
 							},
 							Command: []string{"/bin/bash", "-c"},
-							Args: []string{"/usr/output/bin/log-collector --fluentd-log-level=info --log-level=info & /usr/output/bin/log-agent -alsologtostderr"},
+							Args: []string{"/usr/output/bin/start.sh"},
 							Resources: corev1.ResourceRequirements{
 								// TODO: add support for configuring them
 								Limits: corev1.ResourceList{
@@ -626,7 +620,6 @@ func (c *Controller) genDaemonSet(version string) *appsv1.DaemonSet {
 								},
 							},
 							Env: []corev1.EnvVar{
-								{Name: "EXCEPTION_DSN", Value: "http://fb8e7951085148148d727465de5b5d34:c2b917404bfb47ce9e1b3f7d18dfc70f@exception.log.ccs.cloud.tencent.com/3"},
 								{Name: "HOST_ROOTFS", Value: "/rootfs"},
 								{Name: "K8S_NODE_NAME", ValueFrom: &corev1.EnvVarSource{FieldRef: &corev1.ObjectFieldSelector{FieldPath: "spec.nodeName"}}},
 							},
@@ -776,12 +769,18 @@ func (c *Controller) checkLogCollectorStatus(
 
 		daemon, err := kubeClient.AppsV1().DaemonSets(metav1.NamespaceSystem).
 			Get(daemonSetName, metav1.GetOptions{})
+
 		if err != nil || daemon.Status.DesiredNumberScheduled == 0 ||
 			daemon.Status.NumberAvailable < daemon.Status.DesiredNumberScheduled {
 			if time.Now().After(initDelay) {
+				if err != nil {
+					log.Errorf("check logagent %v status failed %v", LogCollector.Name, err)
+				} else {
+					log.Warnf("logagent %v not healthy", LogCollector.Name)
+				}
 				LogCollector = LogCollector.DeepCopy()
-				LogCollector.Status.Phase = v1.AddonPhaseFailed
-				LogCollector.Status.Reason = fmt.Sprintf("Log Collector is not healthy")
+				LogCollector.Status.Phase = v1.AddonPhaseChecking
+				LogCollector.Status.Reason = fmt.Sprintf("Log Collector is not healthy in status check")
 				if err = c.persistUpdate(LogCollector); err != nil {
 					return false, err
 				}
@@ -829,9 +828,10 @@ func (c *Controller) watchLogCollectorHealth(key string) func() (bool, error) {
 		_, err = kubeClient.AppsV1().DaemonSets(metav1.NamespaceSystem).
 			Get(daemonSetName, metav1.GetOptions{})
 		if err != nil {
+			log.Errorf("watch logagent %v status failed %v", LogCollector.Name, err)
 			LogCollector = LogCollector.DeepCopy()
-			LogCollector.Status.Phase = v1.AddonPhaseFailed
-			LogCollector.Status.Reason = "LogCollector is not healthy."
+			LogCollector.Status.Phase = v1.AddonPhaseChecking
+			LogCollector.Status.Reason = "LogCollector is not healthy in watch."
 			if err = c.persistUpdate(LogCollector); err != nil {
 				return false, err
 			}

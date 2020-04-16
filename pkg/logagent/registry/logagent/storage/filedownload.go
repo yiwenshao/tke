@@ -68,13 +68,12 @@ func (r *FileDownloadREST) ConnectMethods() []string {
 }
 
 // Connect returns a handler for the kube-apiserver proxy
-func (r *FileDownloadREST) Connect(ctx context.Context, clusterName string, opts runtime.Object, responder rest.Responder) (http.Handler, error) {
-	clusterObject, err := r.store.Get(ctx, clusterName, &metav1.GetOptions{})
+func (r *FileDownloadREST) Connect(ctx context.Context, loagentName string, opts runtime.Object, responder rest.Responder) (http.Handler, error) {
+	logagentObject, err := r.store.Get(ctx, loagentName, &metav1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}
-	logagent := clusterObject.(*logagent.LogAgent)
-	log.Infof("get log agent name=%v agent=%v", clusterName, logagent.Spec)
+	logagent := logagentObject.(*logagent.LogAgent)
 	return &logCollectorProxyHandler{
 		clusterId: logagent.Spec.ClusterName,
 		platformClient: r.PlatformClient,

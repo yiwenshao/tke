@@ -48,7 +48,7 @@ func (c Components) Get(name string) *containerregistry.Image {
 
 var versionMap = map[string]Components{
 	LatestVersion: {
-		LogCollector: containerregistry.Image{Name: "log-collector", Tag: "v1.1.0"},
+		LogCollector: containerregistry.Image{Name: "log-agent", Tag: "v1.1.0"},
 	},
 }
 
