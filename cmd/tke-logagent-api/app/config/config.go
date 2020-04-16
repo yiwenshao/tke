@@ -37,7 +37,6 @@ import (
 	"tkestack.io/tke/pkg/apiserver/storage"
 	controllerconfig "tkestack.io/tke/pkg/controller/config"
 	"tkestack.io/tke/pkg/logagent/apiserver"
-	"tkestack.io/tke/pkg/util/log"
 )
 
 const (
@@ -53,14 +52,11 @@ type Config struct {
 	StorageFactory                 *serverstorage.DefaultStorageFactory
 	PrivilegedUsername             string
 	PlatformClient                 platformversionedclient.PlatformV1Interface
-	//MonitorConfig                  *monitorconfig.MonitorConfiguration  //from apis
 }
 
 
 //config relies on options
 func CreateConfigFromOptions(serverName string, opts *options.Options) (*Config, error) {
-	log.Infof("==========================================================================================================")
-
 	genericAPIServerConfig := genericapiserver.NewConfig(logagent.Codecs)
 	genericAPIServerConfig.BuildHandlerChainFunc = handler.BuildHandlerChain(nil)
 	genericAPIServerConfig.MergedResourceConfig = apiserver.DefaultAPIResourceConfigSource()//used pkg/log-agent/apiserver
@@ -79,10 +75,6 @@ func CreateConfigFromOptions(serverName string, opts *options.Options) (*Config,
 		for k, v := range generated {
 			result[k] = v
 		}
-		//customs := monitoropenapi.GetOpenAPIDefinitions(callback) //custom routes can use this to add openapi
-		//for k, v := range customs {
-		//	result[k] = v
-		//} //do not use openapi here
 		return result
 	}, title, license, opts.Generic.ExternalHost, opts.Generic.ExternalPort)
 
@@ -132,6 +124,5 @@ func CreateConfigFromOptions(serverName string, opts *options.Options) (*Config,
 		StorageFactory:                 storageFactory,
 		PlatformClient:                 platformClient.PlatformV1(),
 		PrivilegedUsername:             opts.Authentication.PrivilegedUsername,
-		//MonitorConfig:                  monitorConfig, //tobe added if we need more logagent config here
 	}, nil
 }

@@ -1,3 +1,21 @@
+/*
+ * Tencent is pleased to support the open source community by making TKEStack
+ * available.
+ *
+ * Copyright (C) 2012-2019 Tencent. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License. You may obtain a copy of the
+ * License at
+ *
+ * https://opensource.org/licenses/Apache-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OF ANY KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
+
 package storage
 
 import (
@@ -29,10 +47,6 @@ type FileNodeREST struct {
 }
 
 var _ = rest.Creater(&FileNodeREST{})//implement the Creater interface, then how to obtail client to user cluster?
-//var _ rest.ShortNamesProvider = &FileNodeREST{}
-//var _ rest.Creater = &FileNodeREST{}
-//var _ rest.Scoper = &FileNodeREST{}
-////more interfaces to be created??
 
 // New returns an empty object that can be used with Create after request data
 // has been put into it.
@@ -40,24 +54,6 @@ func (r *FileNodeREST)  New() runtime.Object {
 	log.Infof("new filenode called")
 	return &logagent.LogFileTree{}
 }
-
-//func (r *FileNodeREST) ShortNames() []string{
-//	return []string{"logfiletree"}
-//}
-//
-//func (r *FileNodeREST) NamespaceScoped() bool {
-//	return false
-//}
-//
-//type  String string
-//
-//func (*String) GetObjectKind() schema.ObjectKind {
-//	return schema.EmptyObjectKind
-//}
-//
-//func (*String) DeepCopyObject() runtime.Object {
-//	panic("String does not implement DeepCopyObject")
-//}
 
 type FileNodeRequest struct {
 	PodName string `json:"podName"`
@@ -96,7 +92,7 @@ func (p *FileNodeProxy) GetReaderCloser() (io.ReadCloser,error) {
 }
 
 func (r *FileNodeREST) Create(ctx context.Context, obj runtime.Object, createValidation rest.ValidateObjectFunc, options *metav1.CreateOptions) (runtime.Object, error) {
-	//how to get the parent resource??
+	//TODO: get cluster id from parent resource
 	userName, tenantID := authentication.GetUsernameAndTenantID(ctx)
 	fileNode := obj.(*logagent.LogFileTree)
 	log.Infof("get userNmae %v tenantId %v and fileNode spec=%+v", userName, tenantID, fileNode.Spec)
